@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 1360 800">
+  <!-- Generator: Adobe Illustrator 30.2.1, SVG Export Plug-In . SVG Version: 2.1.1 Build 1)  -->
+  <defs>
+    <style>
+      .st0 {
+        stroke-width: 4.4px;
+      }
+
+      .st0, .st1, .st2, .st3, .st4, .st5, .st6 {
+        fill: none;
+      }
+
+      .st0, .st7, .st8, .st5 {
+        stroke: #5dcaa5;
+      }
+
+      .st0, .st4, .st5 {
+        stroke-linejoin: round;
+      }
+
+      .st0, .st4, .st5, .st6 {
+        stroke-linecap: round;
+      }
+
+      .st1, .st9, .st7, .st3, .st8, .st10, .st11, .st6 {
+        stroke-miterlimit: 8;
+      }
+
+      .st1, .st7, .st3, .st8, .st10 {
+        stroke-width: 2.4px;
+      }
+
+      .st1, .st12, .st13, .st14, .st15, .st3, .st16, .st5, .st17, .st18 {
+        isolation: isolate;
+      }
+
+      .st1, .st3 {
+        stroke: #534ab7;
+      }
+
+      .st1, .st17 {
+        opacity: .5;
+      }
+
+      .st9 {
+        fill-opacity: .6;
+      }
+
+      .st9, .st11 {
+        fill: #3c3489;
+        stroke: #7f77dd;
+        stroke-width: 3px;
+      }
+
+      .st7 {
+        fill: #04342c;
+      }
+
+      .st19 {
+        fill: #534ab7;
+      }
+
+      .st12 {
+        fill: #eeedfe;
+        font-family: CourierNewPS-BoldMT, 'Courier New';
+        font-size: 56px;
+        font-weight: 700;
+        letter-spacing: -.02em;
+      }
+
+      .st20 {
+        fill: #9fe1cb;
+      }
+
+      .st13, .st14, .st15, .st17 {
+        fill: #5dcaa5;
+      }
+
+      .st13, .st3 {
+        opacity: .6;
+      }
+
+      .st14 {
+        opacity: .7;
+      }
+
+      .st15 {
+        opacity: .8;
+      }
+
+      .st8 {
+        fill: #085041;
+      }
+
+      .st4, .st10, .st6 {
+        stroke: #f09595;
+      }
+
+      .st4, .st6 {
+        stroke-width: 4px;
+      }
+
+      .st5 {
+        opacity: .35;
+        stroke-width: 2px;
+      }
+
+      .st18 {
+        fill: #afa9ec;
+        font-family: CourierNewPSMT, 'Courier New';
+        font-size: 26px;
+        letter-spacing: .08em;
+      }
+
+      .st10 {
+        fill: #501313;
+      }
+
+      .st21 {
+        fill: #26215c;
+      }
+    </style>
+  </defs>
+  <g>
+    <rect class="st21" x="284" y="192.86" width="216" height="296" rx="6" ry="6"/>
+    <rect class="st19" x="272" y="180.86" width="32" height="320" rx="8" ry="8"/>
+    <rect class="st9" x="272" y="180.86" width="240" height="320" rx="12" ry="12"/>
+    <line class="st1" x1="316" y1="240.86" x2="480" y2="240.86"/>
+    <line class="st1" x1="316" y1="268.86" x2="480" y2="268.86"/>
+    <line class="st1" x1="316" y1="296.86" x2="480" y2="296.86"/>
+    <line class="st1" x1="316" y1="324.86" x2="480" y2="324.86"/>
+    <line class="st1" x1="316" y1="352.86" x2="440" y2="352.86"/>
+    <line class="st1" x1="316" y1="380.86" x2="480" y2="380.86"/>
+    <line class="st1" x1="316" y1="408.86" x2="410" y2="408.86"/>
+    <line class="st1" x1="316" y1="436.86" x2="480" y2="436.86"/>
+    <path class="st4" d="M376,180.86l-8,44,16,28-12,36,16,40-12,44,8,128"/>
+    <circle class="st10" cx="500" cy="180.86" r="28"/>
+    <line class="st6" x1="486" y1="166.86" x2="514" y2="194.86"/>
+    <line class="st6" x1="514" y1="166.86" x2="486" y2="194.86"/>
+    <path class="st2" d="M698,328.86l18,12-18,12"/>
+    <g>
+      <rect class="st8" x="604" y="262.86" width="52" height="52" rx="12" ry="12"/>
+      <path class="st20" d="M620,302.86l16-20c5.33-6.67,6.67-11.33,4-14s-6-3.33-10-2l4,6-6,6-8,24Z"/>
+      <rect class="st20" x="633.9" y="272.62" width="20" height="8" rx="2" ry="2" transform="translate(-7.01 536.32) rotate(-45)"/>
+    </g>
+    <rect class="st21" x="844" y="192.86" width="216" height="296" rx="6" ry="6"/>
+    <rect class="st19" x="832" y="180.86" width="32" height="320" rx="8" ry="8"/>
+    <rect class="st11" x="832" y="180.86" width="240" height="320" rx="12" ry="12"/>
+    <line class="st3" x1="876" y1="240.86" x2="1040" y2="240.86"/>
+    <line class="st3" x1="876" y1="268.86" x2="1040" y2="268.86"/>
+    <line class="st3" x1="876" y1="296.86" x2="1040" y2="296.86"/>
+    <line class="st3" x1="876" y1="324.86" x2="1040" y2="324.86"/>
+    <line class="st3" x1="876" y1="352.86" x2="1000" y2="352.86"/>
+    <line class="st3" x1="876" y1="380.86" x2="1040" y2="380.86"/>
+    <line class="st3" x1="876" y1="408.86" x2="970" y2="408.86"/>
+    <line class="st3" x1="876" y1="436.86" x2="1040" y2="436.86"/>
+    <path class="st5" d="M936,180.86l-8,44,16,28-12,36,16,40-12,44,8,128"/>
+    <circle class="st7" cx="1060" cy="180.86" r="28"/>
+    <path class="st0" d="M1046,180.86l10,12,20-26"/>
+    <circle class="st15" cx="606" cy="292.86" r="5"/>
+    <circle class="st13" cx="630" cy="388.86" r="4"/>
+    <circle class="st14" cx="700" cy="268.86" r="3.6"/>
+    <circle class="st17" cx="734" cy="404.86" r="4.4"/>
+    <circle class="st15" cx="760" cy="304.86" r="3"/>
+  </g>
+  <g>
+    <g class="st16">
+      <text class="st12" transform="translate(436.84 573.47)"><tspan x="0" y="0">epub-kindle-fix</tspan></text>
+    </g>
+    <g class="st16">
+      <text class="st18" transform="translate(390.94 629.47)"><tspan x="0" y="0">CLI tool · 8 automated EPUB fixes</tspan></text>
+    </g>
+  </g>
+</svg>
