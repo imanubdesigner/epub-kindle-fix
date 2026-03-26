@@ -6,7 +6,6 @@
 </div>
 
 <div align="center">
-
 ![Shell Script](https://img.shields.io/badge/shell-bash-4EAA25?logo=gnu-bash&logoColor=white)
 ![Python](https://img.shields.io/badge/python-3.x-3776AB?logo=python&logoColor=white)
 ![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macOS-lightgrey)
