@@ -1,85 +1,177 @@
-<svg width="1360" height="800" viewBox="0 0 680 400" xmlns="http://www.w3.org/2000/svg">
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 1360 800">
+  <!-- Generator: Adobe Illustrator 30.2.1, SVG Export Plug-In . SVG Version: 2.1.1 Build 1)  -->
   <defs>
-    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-      <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-    </marker>
     <style>
-      .book-cover    { fill: #3C3489; stroke: #7F77DD; }
-      .book-pages    { fill: #26215C; }
-      .book-spine    { fill: #534AB7; }
-      .crack         { stroke: #F09595; }
-      .crack-fixed   { stroke: #5DCAA5; }
-      .checkmark     { stroke: #5DCAA5; }
-      .badge-bg      { fill: #085041; stroke: #5DCAA5; }
-      .badge-text    { fill: #9FE1CB; }
-      .arrow-ok      { stroke: #7F77DD; }
-      .label-main    { fill: #EEEDFE; }
-      .label-sub     { fill: #AFA9EC; }
-      .particle      { fill: #5DCAA5; }
-      .scan-line     { stroke: #534AB7; }
+      .st0 {
+        stroke-width: 4.4px;
+      }
+
+      .st0, .st1, .st2, .st3, .st4, .st5, .st6 {
+        fill: none;
+      }
+
+      .st0, .st7, .st8, .st5 {
+        stroke: #5dcaa5;
+      }
+
+      .st0, .st4, .st5 {
+        stroke-linejoin: round;
+      }
+
+      .st0, .st4, .st5, .st6 {
+        stroke-linecap: round;
+      }
+
+      .st1, .st9, .st7, .st3, .st8, .st10, .st11, .st6 {
+        stroke-miterlimit: 8;
+      }
+
+      .st1, .st7, .st3, .st8, .st10 {
+        stroke-width: 2.4px;
+      }
+
+      .st1, .st12, .st13, .st14, .st3, .st5, .st15, .st16, .st17 {
+        isolation: isolate;
+      }
+
+      .st1, .st3 {
+        stroke: #534ab7;
+      }
+
+      .st1, .st17 {
+        opacity: .5;
+      }
+
+      .st9 {
+        fill-opacity: .6;
+      }
+
+      .st9, .st11 {
+        fill: #3c3489;
+        stroke: #7f77dd;
+        stroke-width: 3px;
+      }
+
+      .st7 {
+        fill: #04342c;
+      }
+
+      .st18 {
+        fill: #534ab7;
+      }
+
+      .st19 {
+        fill: #9fe1cb;
+      }
+
+      .st12, .st13, .st14, .st17 {
+        fill: #5dcaa5;
+      }
+
+      .st12, .st3 {
+        opacity: .6;
+      }
+
+      .st13 {
+        opacity: .7;
+      }
+
+      .st14 {
+        opacity: .8;
+      }
+
+      .st8 {
+        fill: #085041;
+      }
+
+      .st4, .st10, .st6 {
+        stroke: #f09595;
+      }
+
+      .st4, .st6 {
+        stroke-width: 4px;
+      }
+
+      .st5 {
+        opacity: .35;
+        stroke-width: 2px;
+      }
+
+      .st15 {
+        fill: #eeedfe;
+        font-family: CourierNewPS-BoldMT, 'Courier New';
+        font-size: 56px;
+        font-weight: 700;
+        letter-spacing: -.02em;
+      }
+
+      .st16 {
+        fill: #afa9ec;
+        font-family: CourierNewPSMT, 'Courier New';
+        font-size: 26px;
+        letter-spacing: .08em;
+      }
+
+      .st10 {
+        fill: #501313;
+      }
+
+      .st20 {
+        fill: #26215c;
+      }
     </style>
   </defs>
-
-  <!-- ── LEFT: broken book ── -->
-  <rect x="102" y="102" width="108" height="148" rx="3" class="book-pages"/>
-  <rect x="96"  y="96"  width="16"  height="160" rx="4" class="book-spine"/>
-  <rect x="96"  y="96"  width="120" height="160" rx="6" class="book-cover" stroke-width="1.5" fill-opacity="0.6"/>
-  <line x1="118" y1="126" x2="200" y2="126" stroke-width="1.2" class="scan-line" opacity="0.5"/>
-  <line x1="118" y1="140" x2="200" y2="140" stroke-width="1.2" class="scan-line" opacity="0.5"/>
-  <line x1="118" y1="154" x2="200" y2="154" stroke-width="1.2" class="scan-line" opacity="0.5"/>
-  <line x1="118" y1="168" x2="200" y2="168" stroke-width="1.2" class="scan-line" opacity="0.5"/>
-  <line x1="118" y1="182" x2="180" y2="182" stroke-width="1.2" class="scan-line" opacity="0.5"/>
-  <line x1="118" y1="196" x2="200" y2="196" stroke-width="1.2" class="scan-line" opacity="0.5"/>
-  <line x1="118" y1="210" x2="165" y2="210" stroke-width="1.2" class="scan-line" opacity="0.5"/>
-  <line x1="118" y1="224" x2="200" y2="224" stroke-width="1.2" class="scan-line" opacity="0.5"/>
-  <!-- crack -->
-  <path d="M148 96 L144 118 L152 132 L146 150 L154 170 L148 192 L152 256"
-        class="crack" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-  <!-- X badge -->
-  <circle cx="210" cy="96" r="14" fill="#501313" stroke="#F09595" stroke-width="1.2"/>
-  <line x1="203" y1="89" x2="217" y2="103" stroke="#F09595" stroke-width="2" stroke-linecap="round"/>
-  <line x1="217" y1="89" x2="203" y2="103" stroke="#F09595" stroke-width="2" stroke-linecap="round"/>
-
-  <!-- ── ARROW + wrench ── -->
-  <path d="M252 176 Q310 176 318 176" class="arrow-ok" stroke-width="2.5" fill="none"
-        stroke-linecap="round" marker-end="url(#arrow)"/>
-  <g transform="translate(275,150)">
-    <rect x="-13" y="-13" width="26" height="26" rx="6" class="badge-bg" stroke-width="1.2"/>
-    <path d="M-5 7 L3 -3 Q7 -8 5 -10 Q3 -12 0 -11 L2 -8 L-1 -5 Z" class="badge-text" stroke="none"/>
-    <rect x="2" y="-4" width="10" height="4" rx="1" transform="rotate(-45 2 -4)" class="badge-text" stroke="none"/>
+  <path class="st2" d=""/>
+  <path class="st2" d="M1272,1456" marker-end="url(#arrow)"/>
+  <g>
+    <g>
+      <rect class="st20" x="284" y="192.86" width="216" height="296" rx="6" ry="6"/>
+      <rect class="st18" x="272" y="180.86" width="32" height="320" rx="8" ry="8"/>
+      <rect class="st9" x="272" y="180.86" width="240" height="320" rx="12" ry="12"/>
+      <line class="st1" x1="316" y1="240.86" x2="480" y2="240.86"/>
+      <line class="st1" x1="316" y1="268.86" x2="480" y2="268.86"/>
+      <line class="st1" x1="316" y1="296.86" x2="480" y2="296.86"/>
+      <line class="st1" x1="316" y1="324.86" x2="480" y2="324.86"/>
+      <line class="st1" x1="316" y1="352.86" x2="440" y2="352.86"/>
+      <line class="st1" x1="316" y1="380.86" x2="480" y2="380.86"/>
+      <line class="st1" x1="316" y1="408.86" x2="410" y2="408.86"/>
+      <line class="st1" x1="316" y1="436.86" x2="480" y2="436.86"/>
+      <path class="st4" d="M376,180.86l-8,44,16,28-12,36,16,40-12,44,8,128"/>
+      <circle class="st10" cx="500" cy="180.86" r="28"/>
+      <line class="st6" x1="486" y1="166.86" x2="514" y2="194.86"/>
+      <line class="st6" x1="514" y1="166.86" x2="486" y2="194.86"/>
+      <path class="st2" d="M698,328.86l18,12-18,12"/>
+      <g>
+        <rect class="st8" x="604" y="262.86" width="52" height="52" rx="12" ry="12"/>
+        <path class="st19" d="M620,302.86l16-20c5.33-6.67,6.67-11.33,4-14-2.67-2.67-6-3.33-10-2l4,6-6,6-8,24Z"/>
+        <rect class="st19" x="633.9" y="272.62" width="20" height="8" rx="2" ry="2" transform="translate(-7.01 536.33) rotate(-45)"/>
+      </g>
+      <rect class="st20" x="844" y="192.86" width="216" height="296" rx="6" ry="6"/>
+      <rect class="st18" x="832" y="180.86" width="32" height="320" rx="8" ry="8"/>
+      <rect class="st11" x="832" y="180.86" width="240" height="320" rx="12" ry="12"/>
+      <line class="st3" x1="876" y1="240.86" x2="1040" y2="240.86"/>
+      <line class="st3" x1="876" y1="268.86" x2="1040" y2="268.86"/>
+      <line class="st3" x1="876" y1="296.86" x2="1040" y2="296.86"/>
+      <line class="st3" x1="876" y1="324.86" x2="1040" y2="324.86"/>
+      <line class="st3" x1="876" y1="352.86" x2="1000" y2="352.86"/>
+      <line class="st3" x1="876" y1="380.86" x2="1040" y2="380.86"/>
+      <line class="st3" x1="876" y1="408.86" x2="970" y2="408.86"/>
+      <line class="st3" x1="876" y1="436.86" x2="1040" y2="436.86"/>
+      <path class="st5" d="M936,180.86l-8,44,16,28-12,36,16,40-12,44,8,128"/>
+      <circle class="st7" cx="1060" cy="180.86" r="28"/>
+      <path class="st0" d="M1046,180.86l10,12,20-26"/>
+      <circle class="st14" cx="606" cy="292.86" r="5"/>
+      <circle class="st12" cx="630" cy="388.86" r="4"/>
+      <circle class="st13" cx="700" cy="268.86" r="3.6"/>
+      <circle class="st17" cx="734" cy="404.86" r="4.4"/>
+      <circle class="st14" cx="760" cy="304.86" r="3"/>
+    </g>
+    <g>
+      <text class="st15" transform="translate(436.84 573.47)"><tspan x="0" y="0">epub-kindle-fix</tspan></text>
+      <text class="st16" transform="translate(390.94 629.47)"><tspan x="0" y="0">CLI tool · 8 automated EPUB fixes</tspan></text>
+    </g>
   </g>
-
-  <!-- ── RIGHT: fixed book ── -->
-  <rect x="382" y="102" width="108" height="148" rx="3" class="book-pages"/>
-  <rect x="376" y="96"  width="16"  height="160" rx="4" class="book-spine"/>
-  <rect x="376" y="96"  width="120" height="160" rx="6" class="book-cover" stroke-width="1.5"/>
-  <line x1="398" y1="126" x2="480" y2="126" stroke-width="1.2" class="scan-line" opacity="0.6"/>
-  <line x1="398" y1="140" x2="480" y2="140" stroke-width="1.2" class="scan-line" opacity="0.6"/>
-  <line x1="398" y1="154" x2="480" y2="154" stroke-width="1.2" class="scan-line" opacity="0.6"/>
-  <line x1="398" y1="168" x2="480" y2="168" stroke-width="1.2" class="scan-line" opacity="0.6"/>
-  <line x1="398" y1="182" x2="460" y2="182" stroke-width="1.2" class="scan-line" opacity="0.6"/>
-  <line x1="398" y1="196" x2="480" y2="196" stroke-width="1.2" class="scan-line" opacity="0.6"/>
-  <line x1="398" y1="210" x2="445" y2="210" stroke-width="1.2" class="scan-line" opacity="0.6"/>
-  <line x1="398" y1="224" x2="480" y2="224" stroke-width="1.2" class="scan-line" opacity="0.6"/>
-  <!-- healed crack -->
-  <path d="M428 96 L424 118 L432 132 L426 150 L434 170 L428 192 L432 256"
-        class="crack-fixed" stroke-width="1" fill="none" stroke-linecap="round"
-        stroke-linejoin="round" opacity="0.35"/>
-  <!-- checkmark badge -->
-  <circle cx="490" cy="96" r="14" fill="#04342C" stroke="#5DCAA5" stroke-width="1.2"/>
-  <path d="M483 96 L488 102 L498 89" class="checkmark" stroke-width="2.2"
-        fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-
-  <!-- particles -->
-  <circle cx="263" cy="152" r="2.5" class="particle" opacity="0.8"/>
-  <circle cx="275" cy="200" r="2"   class="particle" opacity="0.6"/>
-  <circle cx="310" cy="140" r="1.8" class="particle" opacity="0.7"/>
-  <circle cx="327" cy="208" r="2.2" class="particle" opacity="0.5"/>
-  <circle cx="340" cy="158" r="1.5" class="particle" opacity="0.8"/>
-
-  <!-- Labels -->
-  <text x="340" y="308" text-anchor="middle" font-family="monospace" font-size="28" font-weight="700"
-        class="label-main" letter-spacing="-0.5">epub-kindle-fix</text>
-  <text x="340" y="336" text-anchor="middle" font-family="monospace" font-size="13"
-        class="label-sub" letter-spacing="1">CLI tool · 8 automated EPUB fixes</text>
+  <path class="st2" d=""/>
+  <path class="st2" d="M1272,890.84" marker-end="url(#arrow)"/>
 </svg>
