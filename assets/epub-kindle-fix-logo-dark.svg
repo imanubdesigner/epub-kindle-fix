@@ -1,0 +1,85 @@
+<svg width="1360" height="800" viewBox="0 0 680 400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <style>
+      .book-cover    { fill: #3C3489; stroke: #7F77DD; }
+      .book-pages    { fill: #26215C; }
+      .book-spine    { fill: #534AB7; }
+      .crack         { stroke: #F09595; }
+      .crack-fixed   { stroke: #5DCAA5; }
+      .checkmark     { stroke: #5DCAA5; }
+      .badge-bg      { fill: #085041; stroke: #5DCAA5; }
+      .badge-text    { fill: #9FE1CB; }
+      .arrow-ok      { stroke: #7F77DD; }
+      .label-main    { fill: #EEEDFE; }
+      .label-sub     { fill: #AFA9EC; }
+      .particle      { fill: #5DCAA5; }
+      .scan-line     { stroke: #534AB7; }
+    </style>
+  </defs>
+
+  <!-- ── LEFT: broken book ── -->
+  <rect x="102" y="102" width="108" height="148" rx="3" class="book-pages"/>
+  <rect x="96"  y="96"  width="16"  height="160" rx="4" class="book-spine"/>
+  <rect x="96"  y="96"  width="120" height="160" rx="6" class="book-cover" stroke-width="1.5" fill-opacity="0.6"/>
+  <line x1="118" y1="126" x2="200" y2="126" stroke-width="1.2" class="scan-line" opacity="0.5"/>
+  <line x1="118" y1="140" x2="200" y2="140" stroke-width="1.2" class="scan-line" opacity="0.5"/>
+  <line x1="118" y1="154" x2="200" y2="154" stroke-width="1.2" class="scan-line" opacity="0.5"/>
+  <line x1="118" y1="168" x2="200" y2="168" stroke-width="1.2" class="scan-line" opacity="0.5"/>
+  <line x1="118" y1="182" x2="180" y2="182" stroke-width="1.2" class="scan-line" opacity="0.5"/>
+  <line x1="118" y1="196" x2="200" y2="196" stroke-width="1.2" class="scan-line" opacity="0.5"/>
+  <line x1="118" y1="210" x2="165" y2="210" stroke-width="1.2" class="scan-line" opacity="0.5"/>
+  <line x1="118" y1="224" x2="200" y2="224" stroke-width="1.2" class="scan-line" opacity="0.5"/>
+  <!-- crack -->
+  <path d="M148 96 L144 118 L152 132 L146 150 L154 170 L148 192 L152 256"
+        class="crack" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- X badge -->
+  <circle cx="210" cy="96" r="14" fill="#501313" stroke="#F09595" stroke-width="1.2"/>
+  <line x1="203" y1="89" x2="217" y2="103" stroke="#F09595" stroke-width="2" stroke-linecap="round"/>
+  <line x1="217" y1="89" x2="203" y2="103" stroke="#F09595" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- ── ARROW + wrench ── -->
+  <path d="M252 176 Q310 176 318 176" class="arrow-ok" stroke-width="2.5" fill="none"
+        stroke-linecap="round" marker-end="url(#arrow)"/>
+  <g transform="translate(275,150)">
+    <rect x="-13" y="-13" width="26" height="26" rx="6" class="badge-bg" stroke-width="1.2"/>
+    <path d="M-5 7 L3 -3 Q7 -8 5 -10 Q3 -12 0 -11 L2 -8 L-1 -5 Z" class="badge-text" stroke="none"/>
+    <rect x="2" y="-4" width="10" height="4" rx="1" transform="rotate(-45 2 -4)" class="badge-text" stroke="none"/>
+  </g>
+
+  <!-- ── RIGHT: fixed book ── -->
+  <rect x="382" y="102" width="108" height="148" rx="3" class="book-pages"/>
+  <rect x="376" y="96"  width="16"  height="160" rx="4" class="book-spine"/>
+  <rect x="376" y="96"  width="120" height="160" rx="6" class="book-cover" stroke-width="1.5"/>
+  <line x1="398" y1="126" x2="480" y2="126" stroke-width="1.2" class="scan-line" opacity="0.6"/>
+  <line x1="398" y1="140" x2="480" y2="140" stroke-width="1.2" class="scan-line" opacity="0.6"/>
+  <line x1="398" y1="154" x2="480" y2="154" stroke-width="1.2" class="scan-line" opacity="0.6"/>
+  <line x1="398" y1="168" x2="480" y2="168" stroke-width="1.2" class="scan-line" opacity="0.6"/>
+  <line x1="398" y1="182" x2="460" y2="182" stroke-width="1.2" class="scan-line" opacity="0.6"/>
+  <line x1="398" y1="196" x2="480" y2="196" stroke-width="1.2" class="scan-line" opacity="0.6"/>
+  <line x1="398" y1="210" x2="445" y2="210" stroke-width="1.2" class="scan-line" opacity="0.6"/>
+  <line x1="398" y1="224" x2="480" y2="224" stroke-width="1.2" class="scan-line" opacity="0.6"/>
+  <!-- healed crack -->
+  <path d="M428 96 L424 118 L432 132 L426 150 L434 170 L428 192 L432 256"
+        class="crack-fixed" stroke-width="1" fill="none" stroke-linecap="round"
+        stroke-linejoin="round" opacity="0.35"/>
+  <!-- checkmark badge -->
+  <circle cx="490" cy="96" r="14" fill="#04342C" stroke="#5DCAA5" stroke-width="1.2"/>
+  <path d="M483 96 L488 102 L498 89" class="checkmark" stroke-width="2.2"
+        fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- particles -->
+  <circle cx="263" cy="152" r="2.5" class="particle" opacity="0.8"/>
+  <circle cx="275" cy="200" r="2"   class="particle" opacity="0.6"/>
+  <circle cx="310" cy="140" r="1.8" class="particle" opacity="0.7"/>
+  <circle cx="327" cy="208" r="2.2" class="particle" opacity="0.5"/>
+  <circle cx="340" cy="158" r="1.5" class="particle" opacity="0.8"/>
+
+  <!-- Labels -->
+  <text x="340" y="308" text-anchor="middle" font-family="monospace" font-size="28" font-weight="700"
+        class="label-main" letter-spacing="-0.5">epub-kindle-fix</text>
+  <text x="340" y="336" text-anchor="middle" font-family="monospace" font-size="13"
+        class="label-sub" letter-spacing="1">CLI tool · 8 automated EPUB fixes</text>
+</svg>
