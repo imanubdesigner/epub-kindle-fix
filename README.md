@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="epub-kindle-fix-logo.svg" alt="epub-kindle-fix logo" width="520"/>
+  <img src="/assets/epub-kindle-fix-logo.svg" alt="epub-kindle-fix logo" width="520"/>
 </div>
 
 <div align="center">
