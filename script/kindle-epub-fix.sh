@@ -486,7 +486,72 @@ for rel, abs_p in files.items():
 
 
 # ════════════════════════════════════════════════════════════
-# Fix 11 — validateXML
+# Fix 11 — fixInvalidXmlIds
+#   Fix id attributes to be valid XML names (no colons, must not
+#   start with digit, etc.)
+# ════════════════════════════════════════════════════════════
+import re as re_mod
+
+def make_valid_xml_id(id_val):
+    """Make id value a valid XML name."""
+    if not id_val:
+        return 'id_' + str(hash(id_val))[:8]
+    # Replace colons with underscores
+    new_id = id_val.replace(':', '_')
+    # XML names cannot start with digit, hyphen, or period
+    if new_id[0].isdigit() or new_id[0] in '-.':
+        new_id = 'id_' + new_id
+    return new_id
+
+ID_ATTR_RE = re.compile(r'\bid=["\']([^"\']*)["\']', re.IGNORECASE)
+id_fixes = {}  # old_id -> new_id (for updating references)
+
+for rel, abs_p in files.items():
+    if fext(rel) not in ('html', 'xhtml', 'opf', 'ncx'):
+        continue
+    content = read_text(abs_p)
+    changed = False
+
+    def fix_id(m):
+        global changed
+        id_val = m.group(1)
+        new_id = make_valid_xml_id(id_val)
+        if new_id != id_val:
+            id_fixes[id_val] = new_id
+            fixed_issues.append(f'Fixed invalid XML id "{id_val}" -> "{new_id}" in {rel}')
+            changed = True
+            return 'id="' + new_id + '"'
+        return m.group(0)
+
+    new_content = ID_ATTR_RE.sub(fix_id, content)
+    if changed:
+        write_text(abs_p, new_content)
+
+# Update references to renamed IDs (href="#old_id" -> href="#new_id")
+if id_fixes:
+    HREF_RE = re.compile(r'(?:href|src)=["\']#([^"\']+)["\']', re.IGNORECASE)
+    for rel, abs_p in files.items():
+        if fext(rel) not in ('html', 'xhtml', 'ncx'):
+            continue
+        content = read_text(abs_p)
+        changed = False
+
+        def fix_ref(m):
+            global changed
+            ref_id = m.group(1)
+            if ref_id in id_fixes:
+                new_ref = id_fixes[ref_id]
+                changed = True
+                return m.group(0).replace('#' + ref_id, '#' + new_ref)
+            return m.group(0)
+
+        new_content = HREF_RE.sub(fix_ref, content)
+        if changed:
+            write_text(abs_p, new_content)
+            fixed_issues.append(f'Updated references to renamed IDs in {rel}')
+
+# ════════════════════════════════════════════════════════════
+# Fix 12 — validateXML
 #   Check XHTML files are well-formed XML.
 # ════════════════════════════════════════════════════════════
 try:
@@ -509,7 +574,7 @@ else:
 # ════════════════════════════════════════════════════════════
 # ═════════════════════════════════════════════════════════
 # ═══════════════════════════════════════════════════════
-# Fix 12 — fixDuplicateIds
+# Fix 13 — fixDuplicateIds
 #   Find and fix duplicate id attributes across XHTML files.
 #   Renames duplicates by appending _dup1, _dup2, etc.
 # ═══════════════════════════════════════════════════════
@@ -578,7 +643,7 @@ if XML_AVAILABLE:
             write_text(abs_p, content)
             fixed_issues.append('Updated links to renamed IDs in {}'.format(rel))
 
-# Fix 13 — fixNamespaces
+# Fix 14 — fixNamespaces
 #   Add missing required namespaces to OPF and XHTML files.
 # ════════════════════════════════════════════════════════════
 # OPF namespace
@@ -729,20 +794,36 @@ for w in d.get('warnings', [])[:50]:
     )
 
     # ── EpubCheck (if available) ───────────────────────────
+    local epubcheck_errors=0
     if command -v epubcheck &>/dev/null; then
         info "Running EpubCheck validation on output..."
-        epubcheck "$out_path" 2>&1 | head -50 || true
+        local epubcheck_output
+        epubcheck_output=$(epubcheck "$out_path" 2>&1) || true
+        # Check for actual errors (ERROR at start of line or after newline)
+        if echo "$epubcheck_output" | grep -qE "^ERROR|ERROR\(|error:"; then
+            epubcheck_errors=1
+            echo "$epubcheck_output" | head -50
+            echo -e "\n  ${RED}${BOLD}✖ EpubCheck found errors${RESET}"
+        elif echo "$epubcheck_output" | grep -qE "^WARNING|WARNING\(|warning:"; then
+            echo "$epubcheck_output" | head -50
+            echo -e "\n  ${YELLOW}⚠ EpubCheck found warnings${RESET}"
+        else
+            echo "$epubcheck_output" | head -20
+        fi
     fi
 
     if [[ "$fix_count" -gt 0 ]]; then
         echo -e "\n  ${GREEN}${BOLD}✔ ${fix_count} fix(es) applied${RESET}"
-    else
+    elif [[ "$epubcheck_errors" -eq 0 ]]; then
         echo -e "\n  ${CYAN}ℹ  No errors detected — file repacked cleanly.${RESET}"
     fi
     if [[ "$warn_count" -gt 0 ]]; then
         echo -e "  ${YELLOW}⚠ ${warn_count} warning(s) (no file changes)${RESET}"
     fi
     echo -e "  ${GREEN}Output:${RESET} $out_path\n"
+
+    # Return proper exit code
+    [[ "$epubcheck_errors" -eq 0 ]]
 }
 
 # ── Main ─────────────────────────────────────────────────────

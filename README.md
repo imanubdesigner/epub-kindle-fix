@@ -35,7 +35,7 @@ Beyond encoding, Send to Kindle also enforces stricter EPUB structural rules tha
 
 ## Fixes applied
 
-The script runs 13 fixes in order (8 original + 5 new epubcheck-style validations):
+The script runs 14 fixes in order (8 original + 6 new EpubCheck-style validations):
 
 **1. `fixBodyIdLink`**
 Replaces fragment links (e.g. `chapter.xhtml#bodyID`) that point to a `<body id="…">` element with a plain file reference (`chapter.xhtml`). Amazon rejects EPUBs where NCX or TOC files link directly to a body ID hash. Replacement is scoped to `href` and `src` attributes only — no false positives in body text.
@@ -67,13 +67,16 @@ Verifies that all files referenced in the OPF manifest actually exist inside the
 **10. `fixBrokenLinks`** *(new)*
 Scans all XHTML, OPF, and NCX files for `href` and `src` attributes. Broken internal links are **automatically fixed** by case-insensitive file matching or removed if the file cannot be found. External URLs, anchors (`#id`), and data URIs are correctly skipped.
 
-**11. `validateXML`** *(new)*
+**11. `fixInvalidXmlIds`** *(new)*
+Fixes invalid XML `id` attributes that contain colons or start with digits (e.g. UUIDs like `5fa24b14-a9b0-4b94-bd4b-c3513accae2d`). These violate XML naming rules and cause parsing errors. Invalid IDs are **automatically fixed** by replacing colons with underscores and prepending `id_` if needed. All references to renamed IDs are also updated.
+
+**12. `validateXML`** *(new)*
 Checks that all XHTML, OPF, and NCX files are well-formed XML using Python's `xml.etree.ElementTree` parser. Malformed XML is reported as a warning (manual fix required).
 
-**12. `fixDuplicateIds`** *(new)*
+**13. `fixDuplicateIds`** *(new)*
 Finds duplicate `id` attributes across XHTML files. Duplicate IDs are **automatically renamed** by appending `_dup1`, `_dup2`, etc. All internal links pointing to the renamed IDs are also updated automatically.
 
-**13. `fixNamespaces`** *(new)*
+**14. `fixNamespaces`** *(new)*
 Adds missing required XML namespaces:
 - OPF: `http://www.idpf.org/2007/opf` and `http://purl.org/dc/elements/1.1/`
 - XHTML: `http://www.w3.org/1999/xhtml`
@@ -124,6 +127,88 @@ sudo apt install unzip zip python3
 ## Warning
 
 The script never touches your original file — it always writes the result to a new `(fixed)` or `(repacked)` copy. That said, I still recommend keeping a manual backup of your EPUB before running it. The output should work correctly with Send to Kindle, but I can't guarantee it will be a valid EPUB in every edge case — EPUB files come in too many flavours to cover them all.
+
+---
+
+## Changelog
+
+### v1.2: Invalid XML ID Fix (Current)
+This release fixes a critical bug where EpubCheck errors were not properly detected, and adds a new fix for invalid XML IDs.
+
+**New Fixes (Fixed Automatically)**
+11. `fixInvalidXmlIds`
+Fixes invalid XML `id` attributes that contain colons or start with digits (e.g. UUIDs like `5fa24b14-a9b0-4b94-bd4b-c3513accae2d`). These violate XML naming rules and cause parsing errors in strict validators like EpubCheck. Invalid IDs are automatically fixed by replacing colons with underscores and prepending `id_` if needed. All references to renamed IDs are also updated.
+
+**Changed**
+- Script now runs 14 fixes (up from 13 in v1.1)
+- Fixed EpubCheck error detection (now properly detects errors vs "0 errors" in summary)
+- Fixed exit codes (script now returns non-zero when EpubCheck finds errors)
+- Better EpubCheck integration with proper grep patterns for error/warning detection
+
+**Fixed**
+- EpubCheck errors not being detected (false "0 OK" in summary)
+- Invalid XML IDs starting with digits not being fixed (caused EpubCheck failures)
+
+---
+
+### v1.1: EpubCheck-style Auto-Fixes
+This release extends the script with 6 new structural fixes inspired by W3C's EpubCheck, making the tool a more complete EPUB correctness checker before sending to Kindle.
+
+**New Fixes (Fixed Automatically)**
+9. `fixManifestFiles`
+Verifies that all files referenced in the OPF manifest actually exist inside the EPUB archive. Manifest entries pointing to missing files are automatically removed, preventing reading system failures.
+
+10. `fixBrokenLinks`
+Scans all XHTML, OPF, and NCX files for `href` and `src` attributes. Broken internal links are automatically fixed by case-insensitive file matching or removed if the file cannot be found. External URLs, anchors (`#id`), and data URIs are correctly skipped.
+
+11. `validateXML`
+Checks that all XHTML, OPF, and NCX files are well-formed XML using Python's `xml.etree.ElementTree` parser. Malformed XML is reported as a warning (manual fix required).
+
+12. `fixDuplicateIds`
+Finds duplicate `id` attributes across XHTML files. Duplicate IDs are automatically renamed by appending `_dup1`, `_dup2`, etc. All internal links pointing to the renamed IDs are also updated automatically.
+
+13. `fixNamespaces`
+Adds missing required XML namespaces:
+- OPF: `http://www.idpf.org/2007/opf` and `http://purl.org/dc/elements/1.1/`
+- XHTML: `http://www.w3.org/1999/xhtml`
+
+Missing namespaces are automatically added to prevent parsing errors in strict reading systems like Kindle.
+
+**EpubCheck Integration**
+If EpubCheck is installed and available in `$PATH`, the script now automatically runs validation on the fixed output file, showing the first 50 lines of output. This provides a secondary validation pass using the industry-standard tool.
+
+```bash
+# Install EpubCheck (example for Debian/Ubuntu)
+sudo apt install epubcheck
+
+# Install EpubCheck (example Arch Linux)
+sudo pacman -S epubcheck
+
+# Or download from: https://github.com/w3c/epubcheck/releases
+```
+
+**Changed**
+- Script now runs 13 fixes (up from 8)
+- Fix output includes more detailed warnings for structural issues
+- XML validation requires Python's standard library `xml` module (always available in Python 3.x)
+
+**Fixed**
+- None (no bug fixes in this release)
+
+---
+
+### v1.0: Initial Release
+**Added**
+Initial release with 8 fixes ported from innocenat/kindle-epub-fix:
+
+1. `fixBodyIdLink` - Replace fragment links pointing to `<body>` IDs
+2. `fixBookLanguage` - Validate/fix `dc:language` against Amazon KDP list
+3. `fixStrayIMG` - Remove `<img>` tags without `src` attribute
+4. `fixEncoding` - Add XML encoding declaration + strip BOM
+5. `fixCoverMeta` - Ensure `<meta name="cover">` exists in OPF
+6. `fixManifestTypes` - Correct wrong image MIME types in manifest
+7. `fixSpineLinear` - Set `linear="yes"` on real chapters
+8. `fixBrokenFontFace` - Remove `@font-face` rules with missing fonts
 
 ---
 
