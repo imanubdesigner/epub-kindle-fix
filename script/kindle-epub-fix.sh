@@ -39,7 +39,8 @@ import sys, os, re, json
 
 workdir  = sys.argv[1]
 json_out = sys.argv[2]
-fixed_problems = []
+fixed_issues = []
+warnings = []
 
 # ── Helpers ──────────────────────────────────────────────────
 TEXT_EXTS = {'html','xhtml','htm','xml','svg','css','opf','ncx'}
@@ -153,7 +154,7 @@ if body_id_list:
                 content, flags=re.IGNORECASE
             )
             if new_content != content:
-                fixed_problems.append(f'Replaced link target {src} → {dst} in {rel}')
+                fixed_issues.append(f'Replaced link target {src} → {dst} in {rel}')
                 content = new_content
                 changed = True
         if changed:
@@ -210,7 +211,7 @@ if CONTAINER in files:
                     opf_content, count=1, flags=re.IGNORECASE
                 )
             write_text(opf_abs, opf_content)
-            fixed_problems.append(f'Changed document language: {original_language} → {language}')
+            fixed_issues.append(f'Changed document language: {original_language} → {language}')
     else:
         print('  \033[1;33m⚠\033[0m OPF file not found — skipping language fix.', file=sys.stderr)
 else:
@@ -233,7 +234,7 @@ for rel, abs_p in files.items():
     if stray:
         new_content = IMG_RE.sub(lambda m: m.group(0) if img_has_src(m.group(0)) else '', content)
         write_text(abs_p, new_content)
-        fixed_problems.append(f'Removed {len(stray)} stray <img> tag(s) in {rel}')
+        fixed_issues.append(f'Removed {len(stray)} stray <img> tag(s) in {rel}')
 
 # ════════════════════════════════════════════════════════════
 # Fix 4 — fixEncoding (with BOM strip via utf-8-sig reader)
@@ -251,11 +252,11 @@ for rel, abs_p in files.items():
     stripped = content.lstrip()
     if not XML_DECL_RE.match(stripped):
         write_text(abs_p, ENCODING_HEADER + '\n' + content)
-        fixed_problems.append(f'Added XML encoding declaration to {rel}')
+        fixed_issues.append(f'Added XML encoding declaration to {rel}')
     elif stripped != content:
         # BOM was stripped but declaration was present — persist clean version
         write_text(abs_p, stripped)
-        fixed_problems.append(f'Stripped BOM from {rel}')
+        fixed_issues.append(f'Stripped BOM from {rel}')
 
 # ════════════════════════════════════════════════════════════
 # Fix 5 — fixCoverMeta
@@ -281,7 +282,7 @@ if CONTAINER in files and opf_rel and opf_rel in files:
                 opf_content, count=1, flags=re.IGNORECASE
             )
             write_text(files[opf_rel], opf_content)
-            fixed_problems.append(f'Added cover meta tag for manifest item "{cover_id}"')
+            fixed_issues.append(f'Added cover meta tag for manifest item "{cover_id}"')
 
 # ════════════════════════════════════════════════════════════
 # Fix 6 — fixManifestTypes
@@ -302,7 +303,7 @@ if CONTAINER in files and opf_rel and opf_rel in files:
         expected     = EXT_TO_MIME.get(ext)
         declared     = type_m.group(1)
         if expected and declared and declared != expected:
-            fixed_problems.append(f'Fixed media-type for {href_m.group(1)}: "{declared}" → "{expected}"')
+            fixed_issues.append(f'Fixed media-type for {href_m.group(1)}: "{declared}" → "{expected}"')
             changed_mt = True
             return tag.replace(type_m.group(0), f'media-type="{expected}"')
         return tag
@@ -343,7 +344,7 @@ if CONTAINER in files and opf_rel and opf_rel in files:
             return tag
         # This is a real chapter — fix it
         new_tag = re.sub(r'\blinear=["\']no["\']', 'linear="yes"', tag, flags=re.IGNORECASE)
-        fixed_problems.append(f'Fixed spine linear="yes" for "{href}" (was "no")')
+        fixed_issues.append(f'Fixed spine linear="yes" for "{href}" (was "no")')
         spine_changed = True
         return new_tag
 
@@ -381,11 +382,245 @@ for rel, abs_p in files.items():
     new_css = FONT_FACE_RE.sub(replace_broken_font, css)
     if changed:
         write_text(abs_p, new_css)
-        fixed_problems.append(f'Removed broken @font-face rule(s) in {rel}')
+        fixed_issues.append(f'Removed broken @font-face rule(s) in {rel}')
+
+# ════════════════════════════════════════════════════════════
+# ═════════════════════════════════════════════════════════
+# Fix 9 — fixManifestFiles
+#   Verify all manifest items exist and remove broken entries.
+# ═══════════════════════════════════════════════════════════
+if CONTAINER in files and opf_rel and opf_rel in files:
+    opf_content = read_text(files[opf_rel])
+
+    # Build manifest: id -> (href, media-type)
+    manifest_items = {}
+    for m in re.finditer(r'<item\b([^>]+)/?>', opf_content, re.IGNORECASE):
+        attrs = m.group(1)
+        id_m  = re.search(r'\bid=["\']([^"\']+)["\']', attrs, re.IGNORECASE)
+        hr_m  = re.search(r'\bhref=["\']([^"\']+)["\']', attrs, re.IGNORECASE)
+        if id_m and hr_m:
+            manifest_items[id_m.group(1)] = hr_m.group(1)
+
+    # Check manifest files exist and remove broken entries
+    opf_dir = os.path.dirname(opf_rel)
+    items_to_remove = []
+    for item_id, href in manifest_items.items():
+        # Resolve relative to OPF location
+        if opf_dir:
+            full_path = os.path.normpath(os.path.join(opf_dir, href)).replace(os.sep, '/')
+        else:
+            full_path = href
+        abs_path = os.path.join(workdir, full_path)
+        if not os.path.exists(abs_path):
+            items_to_remove.append(item_id)
+            fixed_issues.append(f'Removed manifest item "{item_id}" (missing file: {href})')
+
+    if items_to_remove:
+        # Remove the item tags from OPF
+        def remove_item(m):
+            attrs = m.group(1)
+            id_m = re.search(r'\bid=["\']([^"\']+)["\']', attrs, re.IGNORECASE)
+            if id_m and id_m.group(1) in items_to_remove:
+                return ''
+            return m.group(0)
+
+        opf_content = re.sub(r'<item\b([^>]+)/?>', remove_item, opf_content, flags=re.IGNORECASE)
+        write_text(files[opf_rel], opf_content)
+
+# Fix 10 — fixBrokenLinks
+#   Check href/src attributes point to existing files.
+#   Try case-insensitive match or remove broken references.
+# ════════════════════════════════════════════════════════════
+HREF_SRC_RE = re.compile(r'(?:href|src)=["\']([^"\']+)["\']', re.IGNORECASE)
+
+def find_file_case_insensitive(base_dir, target):
+    """Try to find file with case-insensitive match."""
+    target_lower = target.lower()
+    for root, dirs, files in os.walk(base_dir):
+        for f in files:
+            if f.lower() == target_lower:
+                return os.path.join(root, f)
+    return None
+
+for rel, abs_p in files.items():
+    if fext(rel) not in ('html', 'xhtml', 'opf', 'ncx'):
+        continue
+    content = read_text(abs_p)
+    content_dir = os.path.dirname(rel)
+    changed = False
+
+    def fix_link(m):
+        global changed
+        full_match = m.group(0)
+        link = m.group(1)
+        # Skip anchors, external URLs, data URIs
+        if link.startswith('#') or link.startswith('http') or link.startswith('data:'):
+            return full_match
+        # Remove fragment for file check
+        file_ref = link.split('#')[0]
+        if not file_ref:
+            return full_match
+        # Resolve path
+        target = os.path.normpath(os.path.join(content_dir, file_ref)).replace(os.sep, '/')
+        target_abs = os.path.join(workdir, target)
+        if not os.path.exists(target_abs):
+            # Try case-insensitive search
+            found = find_file_case_insensitive(workdir, os.path.basename(file_ref))
+            if found:
+                # Get relative path from content_dir
+                rel_found = os.path.relpath(found, os.path.join(workdir, content_dir) if content_dir else workdir).replace(os.sep, '/')
+                fragment = link.split('#', 1)[1] if '#' in link else None
+                new_link = rel_found + ('#' + fragment if fragment else '')
+                fixed_issues.append(f'Fixed broken link in {rel}: {link} -> {new_link}')
+                changed = True
+                return full_match.replace(f'="{link}"', f'="{new_link}"')
+            else:
+                fixed_issues.append(f'Removed broken link in {rel}: {link}')
+                changed = True
+                return ''
+        return full_match
+
+    new_content = HREF_SRC_RE.sub(fix_link, content)
+    if changed:
+        write_text(abs_p, new_content)
+
+
+# ════════════════════════════════════════════════════════════
+# Fix 11 — validateXML
+#   Check XHTML files are well-formed XML.
+# ════════════════════════════════════════════════════════════
+try:
+    import xml.etree.ElementTree as ET
+    XML_AVAILABLE = True
+except ImportError:
+    XML_AVAILABLE = False
+
+if XML_AVAILABLE:
+    for rel, abs_p in files.items():
+        if fext(rel) not in ('xhtml', 'opf', 'ncx'):
+            continue
+        try:
+            ET.parse(abs_p)
+        except ET.ParseError as e:
+                warnings.append(f'XML parse error in {rel}: {str(e)[:80]}')
+else:
+            warnings.append('Warning: XML validation skipped (xml module not available)')
+
+# ════════════════════════════════════════════════════════════
+# ═════════════════════════════════════════════════════════
+# ═══════════════════════════════════════════════════════
+# Fix 12 — fixDuplicateIds
+#   Find and fix duplicate id attributes across XHTML files.
+#   Renames duplicates by appending _dup1, _dup2, etc.
+# ═══════════════════════════════════════════════════════
+if XML_AVAILABLE:
+    id_map = {}  # id -> (file, element)
+    id_count = {}  # id -> number of occurrences
+    id_suffix = {}  # (file, id) -> suffix to append
+
+    # First pass: find all IDs and count duplicates
+    for rel, abs_p in files.items():
+        if fext(rel) not in ('html', 'xhtml'):
+            continue
+        try:
+            tree = ET.parse(abs_p)
+            for elem in tree.iter():
+                elem_id = elem.get('id')
+                if elem_id:
+                    if elem_id in id_map:
+                        id_count[elem_id] = id_count.get(elem_id, 1) + 1
+                        # Store mapping for renaming
+                        id_suffix[(rel, elem_id)] = "_dup{}".format(id_count[elem_id])
+                    else:
+                        id_map[elem_id] = rel
+                        id_count[elem_id] = 1
+        except ET.ParseError:
+            pass
+
+    # Second pass: rename duplicates and update links
+    for rel, abs_p in files.items():
+        if fext(rel) not in ('html', 'xhtml'):
+            continue
+        try:
+            tree = ET.parse(abs_p)
+            changed = False
+            for elem in tree.iter():
+                elem_id = elem.get('id')
+                if elem_id and (rel, elem_id) in id_suffix:
+                    new_id = elem_id + id_suffix[(rel, elem_id)]
+                    elem.set('id', new_id)
+                    changed = True
+                    fixed_issues.append('Renamed duplicate id "{}" to "{}" in {}'.format(elem_id, new_id, rel))
+            
+            if changed:
+                tree.write(abs_p, encoding='utf-8', xml_declaration=True)
+        except ET.ParseError:
+            pass
+
+    # Update any href/src links that point to renamed IDs
+    for rel, abs_p in files.items():
+        if fext(rel) not in ('html', 'xhtml'):
+            continue
+        content = read_text(abs_p)
+        changed = False
+        for (file_rel, old_id), suffix in id_suffix.items():
+            new_id = old_id + suffix
+            # Look for links pointing to #old_id within the same file
+            if file_rel == rel:
+                old_fragment = '#{}"'.format(old_id)
+                new_fragment = '#{}"'.format(new_id)
+                content = content.replace(old_fragment, new_fragment)
+                old_fragment2 = "#{}'".format(old_id)
+                new_fragment2 = "#{}'".format(new_id)
+                content = content.replace(old_fragment2, new_fragment2)
+                changed = True
+        if changed:
+            write_text(abs_p, content)
+            fixed_issues.append('Updated links to renamed IDs in {}'.format(rel))
+
+# Fix 13 — fixNamespaces
+#   Add missing required namespaces to OPF and XHTML files.
+# ════════════════════════════════════════════════════════════
+# OPF namespace
+OPF_NS = 'http://www.idpf.org/2007/opf'
+DC_NS  = 'http://purl.org/dc/elements/1.1/'
+
+if CONTAINER in files and opf_rel and opf_rel in files:
+    opf_content = read_text(files[opf_rel])
+    changed_ns = False
+
+    # Check/add OPF namespace
+    if 'xmlns="' + OPF_NS + '"' not in opf_content and 'xmlns:opf="' + OPF_NS + '"' not in opf_content:
+        opf_content = re.sub(r'<package\b', f'<package xmlns="{OPF_NS}"', opf_content, count=1, flags=re.IGNORECASE)
+        changed_ns = True
+
+    # Check/add DC namespace
+    if 'xmlns:dc="' + DC_NS + '"' not in opf_content:
+        opf_content = re.sub(r'<package\b', f'<package xmlns:dc="{DC_NS}"', opf_content, count=1, flags=re.IGNORECASE)
+        changed_ns = True
+
+    if changed_ns:
+        write_text(files[opf_rel], opf_content)
+        fixed_issues.append('Added missing namespaces to OPF')
+
+# XHTML namespace
+XHTML_NS = 'http://www.w3.org/1999/xhtml'
+
+for rel, abs_p in files.items():
+    if fext(rel) not in ('xhtml', 'html'):
+        continue
+    content = read_text(abs_p)
+    if 'xmlns="' + XHTML_NS + '"' not in content:
+        content = re.sub(r'<html\b', f'<html xmlns="{XHTML_NS}"', content, count=1, flags=re.IGNORECASE)
+        write_text(abs_p, content)
+        fixed_issues.append(f'Added XHTML namespace to {rel}')
 
 # ── Write JSON result to dedicated file ───────────────────────
 with open(json_out, 'w', encoding='utf-8') as f:
-    json.dump({'fixes': fixed_problems}, f, ensure_ascii=False)
+    json.dump({
+        'fixed': fixed_issues,
+        'warnings': warnings
+    }, f, ensure_ascii=False)
 
 PYEOF
 }
@@ -422,13 +657,22 @@ process_epub() {
     run_fixes "$workdir" "$json_out"
 
     # ── Read JSON result ─────────────────────────────────────
-    local fix_count=0
+    local fix_count=0 warn_count=0
     if [[ -f "$json_out" ]]; then
         fix_count=$(python3 -c "
 import json, sys
 try:
     d = json.load(open(sys.argv[1]))
-    print(len(d['fixes']))
+    print(len(d.get('fixed', [])))
+except Exception:
+    print(0)
+" "$json_out" 2>/dev/null || echo 0)
+
+        warn_count=$(python3 -c "
+import json, sys
+try:
+    d = json.load(open(sys.argv[1]))
+    print(len(d.get('warnings', [])))
 except Exception:
     print(0)
 " "$json_out" 2>/dev/null || echo 0)
@@ -437,18 +681,33 @@ except Exception:
             python3 -c "
 import json, sys
 d = json.load(open(sys.argv[1]))
-for f in d['fixes']:
+for f in d.get('fixed', []):
     print(f'  \033[0;32m✔\033[0m {f}')
 " "$json_out"
         fi
+
+        if [[ "$warn_count" -gt 0 ]]; then
+            echo -e "\n  ${YELLOW}⚠ ${warn_count} warning(s) (no file changes):${RESET}"
+            python3 -c "
+import json, sys
+d = json.load(open(sys.argv[1]))
+for w in d.get('warnings', [])[:50]:
+    print(f'  \033[1;33m⚠\033[0m {w}')
+" "$json_out"
+            if [[ "$warn_count" -gt 50 ]]; then
+                echo -e "  ${YELLOW}... and $((warn_count - 50)) more warnings${RESET}"
+            fi
+        fi
     fi
 
-    # ── Repack ───────────────────────────────────────────────
-    local out_dir out_name out_path
-    out_dir=$(dirname "$epub_path")
+# ── Repack ───────────────────────────────────────────────
+    local out_dir out_base out_ext out_name out_path
+    out_dir=$(cd "$(dirname "$epub_path")" && pwd)
+    out_base="${epub_name%.epub}"
+    out_ext=".epub"
     [[ "$fix_count" -gt 0 ]] \
-        && out_name="(fixed) ${epub_name}" \
-        || out_name="(repacked) ${epub_name}"
+        && out_name="${out_base} (fixed)${out_ext}" \
+        || out_name="${out_base} (repacked)${out_ext}"
     out_path="${out_dir}/${out_name}"
 
     info "Repacking → ${out_name}"
@@ -469,10 +728,19 @@ for f in d['fixes']:
         fi
     )
 
+    # ── EpubCheck (if available) ───────────────────────────
+    if command -v epubcheck &>/dev/null; then
+        info "Running EpubCheck validation on output..."
+        epubcheck "$out_path" 2>&1 | head -50 || true
+    fi
+
     if [[ "$fix_count" -gt 0 ]]; then
         echo -e "\n  ${GREEN}${BOLD}✔ ${fix_count} fix(es) applied${RESET}"
     else
         echo -e "\n  ${CYAN}ℹ  No errors detected — file repacked cleanly.${RESET}"
+    fi
+    if [[ "$warn_count" -gt 0 ]]; then
+        echo -e "  ${YELLOW}⚠ ${warn_count} warning(s) (no file changes)${RESET}"
     fi
     echo -e "  ${GREEN}Output:${RESET} $out_path\n"
 }

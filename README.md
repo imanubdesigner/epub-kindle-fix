@@ -35,7 +35,7 @@ Beyond encoding, Send to Kindle also enforces stricter EPUB structural rules tha
 
 ## Fixes applied
 
-The script runs 8 fixes in order:
+The script runs 13 fixes in order (8 original + 5 new epubcheck-style validations):
 
 **1. `fixBodyIdLink`**
 Replaces fragment links (e.g. `chapter.xhtml#bodyID`) that point to a `<body id="…">` element with a plain file reference (`chapter.xhtml`). Amazon rejects EPUBs where NCX or TOC files link directly to a body ID hash. Replacement is scoped to `href` and `src` attributes only — no false positives in body text.
@@ -61,6 +61,25 @@ Sets `linear="yes"` on spine items that have `linear="no"` but appear to be real
 **8. `fixBrokenFontFace`**
 Removes `@font-face` CSS rules that reference font files not actually included in the EPUB archive. These broken declarations generate warnings during conversion and can interfere with Kindle's rendering pipeline.
 
+**9. `fixManifestFiles`** *(new)*
+Verifies that all files referenced in the OPF manifest actually exist inside the EPUB archive. Manifest entries pointing to missing files are **automatically removed**, preventing reading system failures.
+
+**10. `fixBrokenLinks`** *(new)*
+Scans all XHTML, OPF, and NCX files for `href` and `src` attributes. Broken internal links are **automatically fixed** by case-insensitive file matching or removed if the file cannot be found. External URLs, anchors (`#id`), and data URIs are correctly skipped.
+
+**11. `validateXML`** *(new)*
+Checks that all XHTML, OPF, and NCX files are well-formed XML using Python's `xml.etree.ElementTree` parser. Malformed XML is reported as a warning (manual fix required).
+
+**12. `fixDuplicateIds`** *(new)*
+Finds duplicate `id` attributes across XHTML files. Duplicate IDs are **automatically renamed** by appending `_dup1`, `_dup2`, etc. All internal links pointing to the renamed IDs are also updated automatically.
+
+**13. `fixNamespaces`** *(new)*
+Adds missing required XML namespaces:
+- OPF: `http://www.idpf.org/2007/opf` and `http://purl.org/dc/elements/1.1/`
+- XHTML: `http://www.w3.org/1999/xhtml`
+
+Missing namespaces are **automatically added** to prevent parsing errors in strict reading systems like Kindle.
+
 ---
 
 ## Usage
@@ -78,7 +97,7 @@ chmod +x kindle-epub-fix.sh
 ./kindle-epub-fix.sh *.epub
 ```
 
-The script outputs a new file prefixed with `(fixed)` if any fixes were applied, or `(repacked)` if the file was already clean. The original file is never modified.
+The script outputs a new file with ` (fixed)` suffix if any fixes were applied, or ` (repacked)` if the file was already clean. The original file is never modified.
 
 ---
 
