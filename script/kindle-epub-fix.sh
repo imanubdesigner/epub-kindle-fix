@@ -115,6 +115,7 @@ FONT_EXTS = {'ttf', 'otf', 'woff', 'woff2', 'eot'}
 
 # ── Build file index ──────────────────────────────────────────
 files = {}  # rel_path -> abs_path (text files only)
+per_file_id_fixes = {}  # rel -> {old_id: new_id}
 for rel, abs_p in text_files(workdir):
     files[rel] = abs_p
 
@@ -490,8 +491,6 @@ for rel, abs_p in files.items():
 #   Fix id attributes to be valid XML names (no colons, must not
 #   start with digit, etc.)
 # ════════════════════════════════════════════════════════════
-import re as re_mod
-
 def make_valid_xml_id(id_val):
     """Make id value a valid XML name."""
     if not id_val:
@@ -518,6 +517,7 @@ for rel, abs_p in files.items():
         new_id = make_valid_xml_id(id_val)
         if new_id != id_val:
             id_fixes[id_val] = new_id
+            per_file_id_fixes.setdefault(rel, {})[id_val] = new_id
             fixed_issues.append(f'Fixed invalid XML id "{id_val}" -> "{new_id}" in {rel}')
             changed = True
             return 'id="' + new_id + '"'
@@ -527,28 +527,7 @@ for rel, abs_p in files.items():
     if changed:
         write_text(abs_p, new_content)
 
-# Update references to renamed IDs (href="#old_id" -> href="#new_id")
-if id_fixes:
-    HREF_RE = re.compile(r'(?:href|src)=["\']#([^"\']+)["\']', re.IGNORECASE)
-    for rel, abs_p in files.items():
-        if fext(rel) not in ('html', 'xhtml', 'ncx'):
-            continue
-        content = read_text(abs_p)
-        changed = False
 
-        def fix_ref(m):
-            global changed
-            ref_id = m.group(1)
-            if ref_id in id_fixes:
-                new_ref = id_fixes[ref_id]
-                changed = True
-                return m.group(0).replace('#' + ref_id, '#' + new_ref)
-            return m.group(0)
-
-        new_content = HREF_RE.sub(fix_ref, content)
-        if changed:
-            write_text(abs_p, new_content)
-            fixed_issues.append(f'Updated references to renamed IDs in {rel}')
 
 # ════════════════════════════════════════════════════════════
 # Fix 12 — validateXML
@@ -602,46 +581,73 @@ if XML_AVAILABLE:
         except ET.ParseError:
             pass
 
-    # Second pass: rename duplicates and update links
-    for rel, abs_p in files.items():
-        if fext(rel) not in ('html', 'xhtml'):
-            continue
-        try:
-            tree = ET.parse(abs_p)
-            changed = False
-            for elem in tree.iter():
-                elem_id = elem.get('id')
-                if elem_id and (rel, elem_id) in id_suffix:
-                    new_id = elem_id + id_suffix[(rel, elem_id)]
-                    elem.set('id', new_id)
-                    changed = True
-                    fixed_issues.append('Renamed duplicate id "{}" to "{}" in {}'.format(elem_id, new_id, rel))
-            
-            if changed:
-                tree.write(abs_p, encoding='utf-8', xml_declaration=True)
-        except ET.ParseError:
-            pass
-
-    # Update any href/src links that point to renamed IDs
+    # Second pass: rename duplicates using regex (avoid ET.write which reformats HTML)
     for rel, abs_p in files.items():
         if fext(rel) not in ('html', 'xhtml'):
             continue
         content = read_text(abs_p)
         changed = False
         for (file_rel, old_id), suffix in id_suffix.items():
+            if file_rel != rel:
+                continue
             new_id = old_id + suffix
-            # Look for links pointing to #old_id within the same file
-            if file_rel == rel:
-                old_fragment = '#{}"'.format(old_id)
-                new_fragment = '#{}"'.format(new_id)
-                content = content.replace(old_fragment, new_fragment)
-                old_fragment2 = "#{}'".format(old_id)
-                new_fragment2 = "#{}'".format(new_id)
-                content = content.replace(old_fragment2, new_fragment2)
+            new_content = re.sub(
+                r'\bid=["\']' + re.escape(old_id) + r'["\']',
+                'id="{}"'.format(new_id),
+                content
+            )
+            if new_content != content:
+                per_file_id_fixes.setdefault(rel, {})[old_id] = new_id
+                fixed_issues.append('Renamed duplicate id "{}" to "{}" in {}'.format(old_id, new_id, rel))
+                content = new_content
                 changed = True
         if changed:
             write_text(abs_p, content)
-            fixed_issues.append('Updated links to renamed IDs in {}'.format(rel))
+
+    # Update all links to renamed IDs (including cross-file)
+    if per_file_id_fixes:
+        for rel, abs_p in files.items():
+            if fext(rel) not in ('html', 'xhtml', 'opf', 'ncx'):
+                continue
+            content = read_text(abs_p)
+            content_dir = os.path.dirname(rel)
+            changed = False
+
+            def fix_link(m):
+                global changed
+                value = m.group(1)
+                # Same file anchor (starts with #)
+                if value.startswith('#'):
+                    frag = value[1:]
+                    if rel in per_file_id_fixes and frag in per_file_id_fixes[rel]:
+                        new_frag = per_file_id_fixes[rel][frag]
+                        changed = True
+                        return m.group(0).replace('#' + frag, '#' + new_frag)
+                    return m.group(0)
+                if value.startswith('http') or value.startswith('data:'):
+                    return m.group(0)
+                # Split file and fragment
+                if '#' in value:
+                    file_part, frag_part = value.split('#', 1)
+                else:
+                    return m.group(0)
+                # Resolve target file relative to current file's directory
+                if content_dir:
+                    target_rel = os.path.normpath(os.path.join(content_dir, file_part)).replace(os.sep, '/')
+                else:
+                    target_rel = file_part
+                # Check if target file has renamed IDs
+                if target_rel in per_file_id_fixes and frag_part in per_file_id_fixes[target_rel]:
+                    new_frag = per_file_id_fixes[target_rel][frag_part]
+                    new_value = file_part + '#' + new_frag
+                    changed = True
+                    return m.group(0).replace(value, new_value)
+                return m.group(0)
+
+            new_content = HREF_SRC_RE.sub(fix_link, content)
+            if changed:
+                write_text(abs_p, new_content)
+                fixed_issues.append('Updated fragment links in {}'.format(rel))
 
 # Fix 14 — fixNamespaces
 #   Add missing required namespaces to OPF and XHTML files.
@@ -675,9 +681,13 @@ for rel, abs_p in files.items():
     if fext(rel) not in ('xhtml', 'html'):
         continue
     content = read_text(abs_p)
-    if 'xmlns="' + XHTML_NS + '"' not in content:
-        content = re.sub(r'<html\b', f'<html xmlns="{XHTML_NS}"', content, count=1, flags=re.IGNORECASE)
-        write_text(abs_p, content)
+    # Check if <html ...> already has any xmlns= attribute
+    html_tag_m = re.search(r'<html\b[^>]*>', content, re.IGNORECASE)
+    if html_tag_m and 'xmlns=' in html_tag_m.group(0):
+        continue  # already has a namespace, skip
+    new_content = re.sub(r'<html\b', '<html xmlns="{}"'.format(XHTML_NS), content, count=1, flags=re.IGNORECASE)
+    if new_content != content:
+        write_text(abs_p, new_content)
         fixed_issues.append(f'Added XHTML namespace to {rel}')
 
 # ── Write JSON result to dedicated file ───────────────────────
