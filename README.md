@@ -143,16 +143,14 @@ Strips fragment identifiers (`#id`) from links that reference non-existent IDs i
 ## 🚀 Usage
 
 ```bash
-chmod +x kindle-epub-fix.sh
-
 # Single file
-./kindle-epub-fix.sh book.epub
+./epub-kindle-fix.sh book.epub
 
 # Multiple files
-./kindle-epub-fix.sh book1.epub book2.epub
+./epub-kindle-fix.sh book1.epub book2.epub
 
 # Whole folder
-./kindle-epub-fix.sh *.epub
+./epub-kindle-fix.sh *.epub
 ```
 
 The script outputs a new file with ` (fixed)` suffix if any fixes were applied, or ` (repacked)` if the file was already clean. The original file is never modified.
@@ -194,4 +192,10 @@ CLI port and extended fixes: this repository.
 
 ## 📄 License
 
-MIT
+This project is licensed under the [MIT License](https://github.com/imanubdesigner/kindle-bt-keepalive?tab=MIT-1-ov-file#readme) - see the LICENSE file for details.
+
+<br>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/-Crafted%20with%20%E2%9D%A4%EF%B8%8F%20%E2%98%95%20for%20readers%20everywhere%20%F0%9F%93%9A-888888?style=for-the-badge" alt="footer">
+</p>
