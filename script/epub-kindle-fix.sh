@@ -448,10 +448,8 @@ for rel, abs_p in files.items():
         continue
     content = read_text(abs_p)
     content_dir = os.path.dirname(rel)
-    changed = False
 
     def fix_link(m):
-        global changed
         full_match = m.group(0)
         link = m.group(1)
         # Skip anchors, external URLs, data URIs
@@ -473,16 +471,14 @@ for rel, abs_p in files.items():
                 fragment = link.split('#', 1)[1] if '#' in link else None
                 new_link = rel_found + ('#' + fragment if fragment else '')
                 fixed_issues.append(f'Fixed broken link in {rel}: {link} -> {new_link}')
-                changed = True
                 return full_match.replace(f'="{link}"', f'="{new_link}"')
             else:
                 fixed_issues.append(f'Removed broken link in {rel}: {link}')
-                changed = True
                 return ''
         return full_match
 
     new_content = HREF_SRC_RE.sub(fix_link, content)
-    if changed:
+    if new_content != content:
         write_text(abs_p, new_content)
 
 
@@ -554,100 +550,76 @@ else:
 # ═════════════════════════════════════════════════════════
 # ═══════════════════════════════════════════════════════
 # Fix 13 — fixDuplicateIds
-#   Find and fix duplicate id attributes across XHTML files.
-#   Renames duplicates by appending _dup1, _dup2, etc.
+#   Find and fix duplicate id attributes within each XHTML file.
+#   Keeps the first occurrence as-is, renames duplicates with
+#   unique _dup2, _dup3, etc. suffixes.
 # ═══════════════════════════════════════════════════════
-if XML_AVAILABLE:
-    id_map = {}  # id -> (file, element)
-    id_count = {}  # id -> number of occurrences
-    id_suffix = {}  # (file, id) -> suffix to append
+ID_ATTR_RE = re.compile(r'\bid=["\']([^"\']+)["\']', re.IGNORECASE)
 
-    # First pass: find all IDs and count duplicates
-    for rel, abs_p in files.items():
-        if fext(rel) not in ('html', 'xhtml'):
+for rel, abs_p in files.items():
+    if fext(rel) not in ('html', 'xhtml'):
+        continue
+
+    content = read_text(abs_p)
+
+    # Collect all id values and their match positions
+    occurrences = {}
+    for m in ID_ATTR_RE.finditer(content):
+        id_val = m.group(1)
+        occurrences.setdefault(id_val, []).append(m)
+
+    changed = False
+    for id_val, matches in occurrences.items():
+        if len(matches) <= 1:
             continue
-        try:
-            tree = ET.parse(abs_p)
-            for elem in tree.iter():
-                elem_id = elem.get('id')
-                if elem_id:
-                    if elem_id in id_map:
-                        id_count[elem_id] = id_count.get(elem_id, 1) + 1
-                        # Store mapping for renaming
-                        id_suffix[(rel, elem_id)] = "_dup{}".format(id_count[elem_id])
-                    else:
-                        id_map[elem_id] = rel
-                        id_count[elem_id] = 1
-        except ET.ParseError:
-            pass
+        # Process in reverse order so earlier positions stay valid
+        for idx in range(len(matches) - 1, 0, -1):
+            m = matches[idx]
+            new_id = "{}_dup{}".format(id_val, idx + 1)
+            s, e = m.start(), m.end()
+            content = content[:s] + 'id="{}"'.format(new_id) + content[e:]
+            fixed_issues.append('Renamed duplicate id "{}" to "{}" in {}'.format(id_val, new_id, rel))
+            changed = True
 
-    # Second pass: rename duplicates using regex (avoid ET.write which reformats HTML)
+    if changed:
+        write_text(abs_p, content)
+
+# Update links to renamed IDs (from fixInvalidXmlIds)
+if per_file_id_fixes:
     for rel, abs_p in files.items():
-        if fext(rel) not in ('html', 'xhtml'):
+        if fext(rel) not in ('html', 'xhtml', 'opf', 'ncx'):
             continue
         content = read_text(abs_p)
-        changed = False
-        for (file_rel, old_id), suffix in id_suffix.items():
-            if file_rel != rel:
-                continue
-            new_id = old_id + suffix
-            new_content = re.sub(
-                r'\bid=["\']' + re.escape(old_id) + r'["\']',
-                'id="{}"'.format(new_id),
-                content
-            )
-            if new_content != content:
-                per_file_id_fixes.setdefault(rel, {})[old_id] = new_id
-                fixed_issues.append('Renamed duplicate id "{}" to "{}" in {}'.format(old_id, new_id, rel))
-                content = new_content
-                changed = True
-        if changed:
-            write_text(abs_p, content)
+        content_dir = os.path.dirname(rel)
 
-    # Update all links to renamed IDs (including cross-file)
-    if per_file_id_fixes:
-        for rel, abs_p in files.items():
-            if fext(rel) not in ('html', 'xhtml', 'opf', 'ncx'):
-                continue
-            content = read_text(abs_p)
-            content_dir = os.path.dirname(rel)
-            changed = False
-
-            def fix_link(m):
-                global changed
-                value = m.group(1)
-                # Same file anchor (starts with #)
-                if value.startswith('#'):
-                    frag = value[1:]
-                    if rel in per_file_id_fixes and frag in per_file_id_fixes[rel]:
-                        new_frag = per_file_id_fixes[rel][frag]
-                        changed = True
-                        return m.group(0).replace('#' + frag, '#' + new_frag)
-                    return m.group(0)
-                if value.startswith('http') or value.startswith('data:'):
-                    return m.group(0)
-                # Split file and fragment
-                if '#' in value:
-                    file_part, frag_part = value.split('#', 1)
-                else:
-                    return m.group(0)
-                # Resolve target file relative to current file's directory
-                if content_dir:
-                    target_rel = os.path.normpath(os.path.join(content_dir, file_part)).replace(os.sep, '/')
-                else:
-                    target_rel = file_part
-                # Check if target file has renamed IDs
-                if target_rel in per_file_id_fixes and frag_part in per_file_id_fixes[target_rel]:
-                    new_frag = per_file_id_fixes[target_rel][frag_part]
-                    new_value = file_part + '#' + new_frag
-                    changed = True
-                    return m.group(0).replace(value, new_value)
+        def fix_link(m):
+            value = m.group(1)
+            if value.startswith('#'):
+                frag = value[1:]
+                if rel in per_file_id_fixes and frag in per_file_id_fixes[rel]:
+                    new_frag = per_file_id_fixes[rel][frag]
+                    return m.group(0).replace('#' + frag, '#' + new_frag)
                 return m.group(0)
+            if value.startswith('http') or value.startswith('data:'):
+                return m.group(0)
+            if '#' in value:
+                file_part, frag_part = value.split('#', 1)
+            else:
+                return m.group(0)
+            if content_dir:
+                target_rel = os.path.normpath(os.path.join(content_dir, file_part)).replace(os.sep, '/')
+            else:
+                target_rel = file_part
+            if target_rel in per_file_id_fixes and frag_part in per_file_id_fixes[target_rel]:
+                new_frag = per_file_id_fixes[target_rel][frag_part]
+                new_value = file_part + '#' + new_frag
+                return m.group(0).replace(value, new_value)
+            return m.group(0)
 
-            new_content = HREF_SRC_RE.sub(fix_link, content)
-            if changed:
-                write_text(abs_p, new_content)
-                fixed_issues.append('Updated fragment links in {}'.format(rel))
+        new_content = HREF_SRC_RE.sub(fix_link, content)
+        if new_content != content:
+            write_text(abs_p, new_content)
+            fixed_issues.append('Updated fragment links in {}'.format(rel))
 
 # Fix 14 — fixNamespaces
 #   Add missing required namespaces to OPF and XHTML files.
@@ -689,6 +661,85 @@ for rel, abs_p in files.items():
     if new_content != content:
         write_text(abs_p, new_content)
         fixed_issues.append(f'Added XHTML namespace to {rel}')
+
+# ════════════════════════════════════════════════════════════
+# Fix 15 — fixValueAttributes
+#   Remove 'value' attribute from elements where it's not
+#   valid in XHTML 1.1 (EPUB 2.0.1). Valid on: <input>,
+#   <option>, <param>, <button>.
+# ════════════════════════════════════════════════════════════
+TAG_RE = re.compile(r'<[^>]+>', re.IGNORECASE)
+VALUE_ATTR_RE = re.compile(r'\s+value=["\'][^"\']*["\']', re.IGNORECASE)
+VALID_VALUE_ELEMENTS = {'input', 'option', 'param', 'button'}
+
+for rel, abs_p in files.items():
+    if fext(rel) not in ('html', 'xhtml'):
+        continue
+    content = read_text(abs_p)
+
+    def strip_value(m):
+        tag = m.group(0)
+        tag_name = re.match(r'<(\w+)', tag, re.IGNORECASE)
+        if not tag_name:
+            return tag
+        if tag_name.group(1).lower() in VALID_VALUE_ELEMENTS:
+            return tag
+        if ' value=' in tag.lower() or " value='" in tag.lower():
+            return VALUE_ATTR_RE.sub('', tag)
+        return tag
+
+    new_content = TAG_RE.sub(strip_value, content)
+    if new_content != content:
+        write_text(abs_p, new_content)
+        fixed_issues.append('Removed invalid value attribute(s) in {}'.format(rel))
+
+# ════════════════════════════════════════════════════════════
+# Fix 16 — fixBrokenFragments
+#   Remove fragment identifiers (#id) from links that point
+#   to non-existent IDs.
+# ════════════════════════════════════════════════════════════
+# Collect all IDs across files
+all_ids = {}
+for rel, abs_p in files.items():
+    if fext(rel) not in ('html', 'xhtml'):
+        continue
+    ids = set()
+    for m in re.finditer(r'\bid=["\']([^"\']+)["\']', read_text(abs_p), re.IGNORECASE):
+        ids.add(m.group(1))
+    if ids:
+        all_ids[rel] = ids
+
+# Check all fragment references
+for rel, abs_p in files.items():
+    if fext(rel) not in ('html', 'xhtml'):
+        continue
+    content = read_text(abs_p)
+    content_dir = os.path.dirname(rel)
+
+    def fix_fragment(m):
+        value = m.group(1)
+        if '#' not in value:
+            return m.group(0)
+        if value.startswith('#'):
+            frag = value[1:]
+            if rel in all_ids and frag in all_ids[rel]:
+                return m.group(0)
+            return m.group(0).replace(value, '')
+        file_part, frag_part = value.split('#', 1)
+        if not frag_part:
+            return m.group(0)
+        if content_dir:
+            target_rel = os.path.normpath(os.path.join(content_dir, file_part)).replace(os.sep, '/')
+        else:
+            target_rel = file_part
+        if target_rel in all_ids and frag_part in all_ids[target_rel]:
+            return m.group(0)
+        return m.group(0).replace(value, file_part)
+
+    new_content = HREF_SRC_RE.sub(fix_fragment, content)
+    if new_content != content:
+        write_text(abs_p, new_content)
+        fixed_issues.append('Fixed broken fragment references in {}'.format(rel))
 
 # ── Write JSON result to dedicated file ───────────────────────
 with open(json_out, 'w', encoding='utf-8') as f:
