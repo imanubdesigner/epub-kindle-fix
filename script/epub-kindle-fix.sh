@@ -891,7 +891,7 @@ for w in d.get('warnings', [])[:50]:
 main() {
     echo -e "${BOLD}${CYAN}"
     echo "  ╔══════════════════════════════════════════╗"
-    echo "  ║   Kindle EPUB Fix  —  v1.0               ║"
+    echo "  ║   Kindle EPUB Fix  —  v1.4               ║"
     echo "  ║   port of innocenat/kindle-epub-fix      ║"
     echo "  ╚══════════════════════════════════════════╝"
     echo -e "${RESET}"
