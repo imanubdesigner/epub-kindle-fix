@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Credits — epub-kindle-fix</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        dark: { 950: '#0f0d1f', 900: '#16142b', 800: '#1f1c3a', 700: '#2a2647' },
+        indigo: { 400: '#7f77dd', 500: '#6d5dc7', 600: '#5a4db3', 700: '#4a3e99' },
+        teal: { 400: '#3cd4a0', 500: '#2bb88a', 600: '#229e75' },
+        coral: { 400: '#f09595', 500: '#e24b4a', 600: '#cc3333' },
+        lavender: { 50: '#eeedfe', 100: '#ddd9f5', 200: '#c5bfe8', 300: '#8b84b4' },
+      }
+    }
+  }
+}
+</script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0f0d1f; color: #eeedfe; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; min-height: 100vh; }
+a { color: #7f77dd; text-decoration: none; transition: color 0.2s; }
+a:hover { color: #3cd4a0; }
+
+nav { background: #16142b; border-bottom: 1px solid rgba(127,119,221,0.12); padding: 0 1.5rem; position: sticky; top: 0; z-index: 50; backdrop-filter: blur(12px); }
+.nav-inner { max-width: 800px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+.nav-links { display: flex; gap: 1.5rem; align-items: center; }
+.nav-links a { font-size: 0.85rem; font-weight: 500; color: #c5bfe8; letter-spacing: 0.02em; }
+.nav-links a:hover { color: #eeedfe; }
+.nav-links a.active { color: #7f77dd; }
+.nav-brand { display: flex; align-items: center; gap: 0.6rem; font-weight: 700; font-size: 1rem; color: #eeedfe; }
+.nav-brand svg { width: 28px; height: 28px; }
+
+.container { max-width: 800px; margin: 0 auto; padding: 0 1.5rem; }
+
+.page-header { padding: 4rem 0 2rem; text-align: center; }
+.page-header h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+.page-header p { color: #8b84b4; font-size: 1.05rem; max-width: 560px; margin: 0 auto; line-height: 1.6; }
+
+.content { padding-bottom: 4rem; }
+.content h2 { font-size: 1.3rem; font-weight: 700; margin: 2.5rem 0 1rem; color: #eeedfe; display: flex; align-items: center; gap: 0.5rem; }
+.content p { color: #8b84b4; line-height: 1.7; margin-bottom: 1rem; font-size: 0.95rem; }
+.content .card { padding: 1.5rem 2rem; background: rgba(31,28,58,0.4); border: 1px solid rgba(127,119,221,0.1); border-radius: 12px; margin: 1.5rem 0; }
+.content .card h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: #c5bfe8; }
+.content .card p { margin-bottom: 0; }
+.content code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.85rem; padding: 0.15rem 0.4rem; background: rgba(31,28,58,0.6); border: 1px solid rgba(127,119,221,0.15); border-radius: 4px; color: #c5bfe8; }
+.content .license-text { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.8rem; line-height: 1.6; color: #8b84b4; white-space: pre-wrap; padding: 1.5rem; background: rgba(15,13,31,0.5); border: 1px solid rgba(127,119,221,0.08); border-radius: 8px; margin: 1rem 0; }
+
+.tag-list { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0; }
+.tag-item { display: flex; align-items: center; gap: 0.4rem; padding: 0.3rem 0.8rem; border-radius: 6px; font-size: 0.78rem; border: 1px solid rgba(127,119,221,0.15); background: rgba(127,119,221,0.06); color: #c5bfe8; }
+
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin: 2rem 0; }
+.stat-box { text-align: center; padding: 1.2rem; background: rgba(31,28,58,0.4); border: 1px solid rgba(127,119,221,0.1); border-radius: 10px; }
+.stat-box .num { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #7f77dd, #3cd4a0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.stat-box .label { font-size: 0.75rem; color: #8b84b4; text-transform: uppercase; letter-spacing: 0.04em; margin-top: 0.2rem; }
+
+footer { border-top: 1px solid rgba(127,119,221,0.08); padding: 2rem 0; text-align: center; color: #8b84b4; font-size: 0.82rem; }
+</style>
+</head>
+<body>
+
+<nav>
+<div class="nav-inner">
+<a href="index.html" class="nav-brand">
+<svg viewBox="0 0 1360 800" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="284" y="193.16" width="216" height="296" rx="6" fill="#eeedfe"/><rect x="272" y="181.16" width="32" height="320" rx="8" fill="#7f77dd"/><rect x="272" y="181.16" width="240" height="320" rx="12" fill="#cecbf6" fill-opacity=".6"/><line x1="316" y1="241.16" x2="480" y2="241.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".5"/><line x1="316" y1="269.16" x2="480" y2="269.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".5"/><line x1="316" y1="297.16" x2="480" y2="297.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".5"/><line x1="316" y1="325.16" x2="480" y2="325.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".5"/><line x1="316" y1="353.16" x2="440" y2="353.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".5"/><line x1="316" y1="381.16" x2="480" y2="381.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".5"/><line x1="316" y1="409.16" x2="410" y2="409.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".5"/><line x1="316" y1="437.16" x2="480" y2="437.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".5"/><path d="M376,181.16l-8,44,16,28-12,36,16,40-12,44,8,128" stroke="#e24b4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="500" cy="181.16" r="28" fill="#fcebeb" stroke="#e24b4a" stroke-width="2.4"/><line x1="486" y1="167.16" x2="514" y2="195.16" stroke="#e24b4a" stroke-width="4" stroke-linecap="round"/><line x1="514" y1="167.16" x2="486" y2="195.16" stroke="#e24b4a" stroke-width="4" stroke-linecap="round"/><rect x="604" y="263.16" width="52" height="52" rx="12" fill="#e1f5ee"/><path d="M620,303.16l16-20c5.33-6.67,6.67-11.33,4-14s-6-3.33-10-2l4,6-6,6-8,24Z" fill="#0f6e56"/><rect x="633.9" y="272.92" width="20" height="8" rx="2" transform="rotate(-45 643.9 276.92)" fill="#0f6e56"/><rect x="844" y="193.16" width="216" height="296" rx="6" fill="#eeedfe"/><rect x="832" y="181.16" width="32" height="320" rx="8" fill="#7f77dd"/><rect x="832" y="181.16" width="240" height="320" rx="12" fill="#cecbf6" stroke="#534ab7" stroke-width="3"/><line x1="876" y1="241.16" x2="1040" y2="241.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".6"/><line x1="876" y1="269.16" x2="1040" y2="269.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".6"/><line x1="876" y1="297.16" x2="1040" y2="297.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".6"/><line x1="876" y1="325.16" x2="1040" y2="325.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".6"/><line x1="876" y1="353.16" x2="1000" y2="353.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".6"/><line x1="876" y1="381.16" x2="1040" y2="381.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".6"/><line x1="876" y1="409.16" x2="970" y2="409.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".6"/><line x1="876" y1="437.16" x2="1040" y2="437.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".6"/><path d="M936,181.16l-8,44,16,28-12,36,16,40-12,44,8,128" stroke="#1d9e75" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity=".35"/><circle cx="1060" cy="181.16" r="28" fill="#e1f5ee"/><path d="M1046,181.16l10,12,20-26" stroke="#1d9e75" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+epub-kindle-fix
+</a>
+<div class="nav-links">
+<a href="index.html">Home</a>
+<a href="why-exist.html">Why</a>
+<a href="fixes.html">Fixes</a>
+<a href="credits.html" class="active">Credits</a>
+<a href="https://github.com/imanubdesigner/epub-kindle-fix" target="_blank">GitHub</a>
+</div>
+</div>
+</nav>
+
+<div class="container">
+<section class="page-header">
+<h1>Credits</h1>
+<p>The people and projects behind epub-kindle-fix.</p>
+</section>
+
+<section class="content">
+
+<div class="stats-row">
+<div class="stat-box"><div class="num">16</div><div class="label">Fixes</div></div>
+<div class="stat-box"><div class="num">2</div><div class="label">Languages</div></div>
+<div class="stat-box"><div class="num">21</div><div class="label">Commits</div></div>
+<div class="stat-box"><div class="num">1</div><div class="label">Contributor</div></div>
+</div>
+
+<div class="card">
+<h3>👤 Original concept</h3>
+<p>
+The original idea, research, and core fixes come from <strong><a href="https://github.com/innocenat" target="_blank">innocenat</a></strong>'s web-based tool <strong><a href="https://github.com/innocenat/kindle-epub-fix" target="_blank">kindle-epub-fix</a></strong>. This repository ports his work to the CLI and extends it with additional EpubCheck-style validations.
+</p>
+</div>
+
+<div class="card">
+<h3>🧑‍💻 CLI port &amp; extended fixes</h3>
+<p>
+CLI port, Python implementation, and additional fixes (9–16) by <strong><a href="https://github.com/imanubdesigner" target="_blank">Manuel</a></strong>. This website and its client-side JavaScript EPUB fixer were also built by the same author.
+</p>
+</div>
+
+<div class="card">
+<h3>📦 Open source</h3>
+<p>
+This project is free and open source under the MIT License. Use it, modify it, share it. The full license text is below and in the <a href="https://github.com/imanubdesigner/epub-kindle-fix" target="_blank">repository</a>.
+</p>
+</div>
+
+<h2>MIT License</h2>
+
+<div class="license-text">MIT License
+
+Copyright (c) 2026 Manuel
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</div>
+
+<div class="tag-list">
+<span class="tag-item">🔧 Fixes 1–8: innocenat</span>
+<span class="tag-item">🧪 Fixes 9–16: epub-kindle-fix</span>
+<span class="tag-item">🐚 CLI: Bash + Python</span>
+<span class="tag-item">🌐 Site: HTML + JS + Tailwind</span>
+</div>
+
+</section>
+</div>
+
+<footer>
+<div class="container">
+<a href="https://github.com/imanubdesigner/epub-kindle-fix">epub-kindle-fix</a> &mdash; port of <a href="https://github.com/innocenat/kindle-epub-fix">innocenat/kindle-epub-fix</a> &mdash; MIT License
+</div>
+</footer>
+
+</body>
+</html>

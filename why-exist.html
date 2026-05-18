@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Why — epub-kindle-fix</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        dark: { 950: '#0f0d1f', 900: '#16142b', 800: '#1f1c3a', 700: '#2a2647' },
+        indigo: { 400: '#7f77dd', 500: '#6d5dc7', 600: '#5a4db3', 700: '#4a3e99' },
+        teal: { 400: '#3cd4a0', 500: '#2bb88a', 600: '#229e75' },
+        coral: { 400: '#f09595', 500: '#e24b4a', 600: '#cc3333' },
+        lavender: { 50: '#eeedfe', 100: '#ddd9f5', 200: '#c5bfe8', 300: '#8b84b4' },
+      }
+    }
+  }
+}
+</script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0f0d1f; color: #eeedfe; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; min-height: 100vh; }
+a { color: #7f77dd; text-decoration: none; transition: color 0.2s; }
+a:hover { color: #3cd4a0; }
+
+nav { background: #16142b; border-bottom: 1px solid rgba(127,119,221,0.12); padding: 0 1.5rem; position: sticky; top: 0; z-index: 50; backdrop-filter: blur(12px); }
+.nav-inner { max-width: 800px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+.nav-links { display: flex; gap: 1.5rem; align-items: center; }
+.nav-links a { font-size: 0.85rem; font-weight: 500; color: #c5bfe8; letter-spacing: 0.02em; }
+.nav-links a:hover { color: #eeedfe; }
+.nav-links a.active { color: #7f77dd; }
+.nav-brand { display: flex; align-items: center; gap: 0.6rem; font-weight: 700; font-size: 1rem; color: #eeedfe; }
+.nav-brand svg { width: 28px; height: 28px; }
+
+.container { max-width: 800px; margin: 0 auto; padding: 0 1.5rem; }
+
+.page-header { padding: 4rem 0 2rem; text-align: center; }
+.page-header h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+.page-header p { color: #8b84b4; font-size: 1.05rem; max-width: 560px; margin: 0 auto; line-height: 1.6; }
+
+.content { padding-bottom: 4rem; }
+.content h2 { font-size: 1.4rem; font-weight: 700; margin: 2.5rem 0 1rem; color: #eeedfe; }
+.content h3 { font-size: 1.1rem; font-weight: 600; margin: 1.5rem 0 0.5rem; color: #c5bfe8; }
+.content p { color: #8b84b4; line-height: 1.7; margin-bottom: 1rem; font-size: 0.95rem; }
+.content ul, .content ol { color: #8b84b4; line-height: 1.7; margin: 0 0 1rem 1.5rem; font-size: 0.95rem; }
+.content li { margin-bottom: 0.3rem; }
+.content .highlight-box { padding: 1.5rem 2rem; background: rgba(31,28,58,0.5); border-left: 3px solid #6d5dc7; border-radius: 0 12px 12px 0; margin: 1.5rem 0; }
+.content .highlight-box p { margin-bottom: 0; }
+.content strong { color: #ddd9f5; }
+.content code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.85rem; padding: 0.15rem 0.4rem; background: rgba(31,28,58,0.6); border: 1px solid rgba(127,119,221,0.15); border-radius: 4px; color: #c5bfe8; }
+.content .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-right: 0.3rem; }
+.tag-encoding { background: rgba(109,93,199,0.15); color: #7f77dd; }
+.tag-amazon { background: rgba(43,184,138,0.15); color: #3cd4a0; }
+.tag-epub { background: rgba(226,75,74,0.15); color: #f09595; }
+
+footer { border-top: 1px solid rgba(127,119,221,0.08); padding: 2rem 0; text-align: center; color: #8b84b4; font-size: 0.82rem; }
+</style>
+</head>
+<body>
+
+<nav>
+<div class="nav-inner">
+<a href="index.html" class="nav-brand">
+<svg viewBox="0 0 1360 800" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="284" y="193.16" width="216" height="296" rx="6" fill="#eeedfe"/><rect x="272" y="181.16" width="32" height="320" rx="8" fill="#7f77dd"/><rect x="272" y="181.16" width="240" height="320" rx="12" fill="#cecbf6" fill-opacity=".6"/><line x1="316" y1="241.16" x2="480" y2="241.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".5"/><line x1="316" y1="269.16" x2="480" y2="269.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".5"/><line x1="316" y1="297.16" x2="480" y2="297.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".5"/><line x1="316" y1="325.16" x2="480" y2="325.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".5"/><line x1="316" y1="353.16" x2="440" y2="353.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".5"/><line x1="316" y1="381.16" x2="480" y2="381.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".5"/><line x1="316" y1="409.16" x2="410" y2="409.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".5"/><line x1="316" y1="437.16" x2="480" y2="437.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".5"/><path d="M376,181.16l-8,44,16,28-12,36,16,40-12,44,8,128" stroke="#e24b4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="500" cy="181.16" r="28" fill="#fcebeb" stroke="#e24b4a" stroke-width="2.4"/><line x1="486" y1="167.16" x2="514" y2="195.16" stroke="#e24b4a" stroke-width="4" stroke-linecap="round"/><line x1="514" y1="167.16" x2="486" y2="195.16" stroke="#e24b4a" stroke-width="4" stroke-linecap="round"/><rect x="604" y="263.16" width="52" height="52" rx="12" fill="#e1f5ee"/><path d="M620,303.16l16-20c5.33-6.67,6.67-11.33,4-14s-6-3.33-10-2l4,6-6,6-8,24Z" fill="#0f6e56"/><rect x="633.9" y="272.92" width="20" height="8" rx="2" transform="rotate(-45 643.9 276.92)" fill="#0f6e56"/><rect x="844" y="193.16" width="216" height="296" rx="6" fill="#eeedfe"/><rect x="832" y="181.16" width="32" height="320" rx="8" fill="#7f77dd"/><rect x="832" y="181.16" width="240" height="320" rx="12" fill="#cecbf6" stroke="#534ab7" stroke-width="3"/><line x1="876" y1="241.16" x2="1040" y2="241.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".6"/><line x1="876" y1="269.16" x2="1040" y2="269.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".6"/><line x1="876" y1="297.16" x2="1040" y2="297.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".6"/><line x1="876" y1="325.16" x2="1040" y2="325.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".6"/><line x1="876" y1="353.16" x2="1000" y2="353.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".6"/><line x1="876" y1="381.16" x2="1040" y2="381.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".6"/><line x1="876" y1="409.16" x2="970" y2="409.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".6"/><line x1="876" y1="437.16" x2="1040" y2="437.16" stroke="#afa9ec" stroke-width="2.4" stroke-miterlimit="8" opacity=".6"/><path d="M936,181.16l-8,44,16,28-12,36,16,40-12,44,8,128" stroke="#1d9e75" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity=".35"/><circle cx="1060" cy="181.16" r="28" fill="#e1f5ee"/><path d="M1046,181.16l10,12,20-26" stroke="#1d9e75" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+epub-kindle-fix
+</a>
+<div class="nav-links">
+<a href="index.html">Home</a>
+<a href="why-exist.html" class="active">Why</a>
+<a href="fixes.html">Fixes</a>
+<a href="credits.html">Credits</a>
+<a href="https://github.com/imanubdesigner/epub-kindle-fix" target="_blank">GitHub</a>
+</div>
+</div>
+</nav>
+
+<div class="container">
+<section class="page-header">
+<h1>Why does this exist?</h1>
+<p>The EPUB format and Amazon's Send to Kindle don't always agree. This tool bridges the gap.</p>
+</section>
+
+<section class="content">
+
+<h2>The short answer</h2>
+
+<p>
+If you've ever sent an EPUB to your Kindle and found garbled characters, missing cover art, or chapters that won't load, the problem isn't your book — it's the assumptions Amazon's converter makes about your file.
+</p>
+
+<div class="highlight-box">
+<p>
+<strong>epub-kindle-fix</strong> applies 16 automated fixes to make your EPUB compatible with Amazon's Send to Kindle service, without changing the content or structure of your book.
+</p>
+</div>
+
+<h2>The encoding problem</h2>
+
+<p>
+The EPUB format requires files to declare their character encoding explicitly. Without that declaration, a parser has no reliable way to know how bytes map to characters. Amazon's Send to Kindle service, built on infrastructure that predates widespread UTF-8 adoption, fills that gap by falling back to <strong>ISO-8859-1 (Latin-1)</strong>, a legacy single-byte encoding that only covers 256 characters.
+</p>
+
+<p>
+The result: any character outside that range — accented letters like <code>à</code>, <code>ö</code>, <code>ñ</code>, punctuation like <code>"</code> or <code>—</code>, or any non-Latin script — gets decoded incorrectly and shows up on your Kindle as garbled symbols or empty boxes.
+</p>
+
+<div class="highlight-box" style="border-left-color:#e24b4a;">
+<p>
+<strong>A real example:</strong> The Italian word <em>"posizione"</em> renders fine, but <em>"posizione è importante"</em> becomes <em>"posizione Ã¨ importante"</em>. The accented <code>è</code> gets mangled because Kindle assumed Latin-1 instead of UTF-8.
+</p>
+</div>
+
+<h2>Stricter than most readers</h2>
+
+<p>
+Beyond encoding, Send to Kindle enforces stricter EPUB structural rules than most readers do. Errors that Calibre, Apple Books, or Kobo silently overlook can cause Amazon's converter to reject or mangle the file:
+</p>
+
+<ul>
+<li><strong>Missing language tags:</strong> Every EPUB must declare its language. Kindle uses this for hyphenation, dictionaries, and text-to-speech.</li>
+<li><strong>Wrong image MIME types:</strong> A <code>.jpg</code> file declared as <code>image/png</code> is silently ignored by Kindle's renderer.</li>
+<li><strong>Fragment links to body IDs:</strong> Amazon rejects EPUBs where the TOC links directly to a <code>&lt;body id="…"&gt;</code> element.</li>
+<li><strong>Broken font references:</strong> <code>@font-face</code> rules pointing to missing font files generate warnings that can stall conversion.</li>
+<li><strong>Invalid XML:</strong> Colons in <code>id</code> attributes, missing namespaces, duplicate IDs — all violations of XML rules that Kindle's parser respects.</li>
+</ul>
+
+<p>
+This tool fixes <em>all</em> of those issues before the file ever reaches Amazon's servers.
+</p>
+
+<h2>Why a CLI tool?</h2>
+
+<p>
+The original web-based tool by <a href="https://github.com/innocenat/kindle-epub-fix">innocenat/kindle-epub-fix</a> works in a browser, but requires you to upload your EPUB to a server. This project started as a <strong>local CLI port</strong> so you can process files directly from your terminal — no uploads, no servers, no limits on file size.
+</p>
+
+<p>
+This website brings the same fixes to your browser as a client-side tool. Your EPUB never leaves your machine.
+</p>
+
+<h2>Who is this for?</h2>
+
+<ul>
+<li><strong>Readers</strong> who buy EPUBs from outside the Amazon ecosystem and want to read them on Kindle</li>
+<li><strong>Authors and publishers</strong> preparing EPUB files for distribution on Amazon KDP</li>
+<li><strong>Power users</strong> who prefer to fix files locally from the command line</li>
+<li><strong>Anyone</strong> who's ever seen <code>Ã¨</code> or <code>â€™</code> on their Kindle and wondered why</li>
+</ul>
+
+</section>
+</div>
+
+<footer>
+<div class="container">
+<a href="https://github.com/imanubdesigner/epub-kindle-fix">epub-kindle-fix</a> &mdash; port of <a href="https://github.com/innocenat/kindle-epub-fix">innocenat/kindle-epub-fix</a> &mdash; MIT License
+</div>
+</footer>
+
+</body>
+</html>
