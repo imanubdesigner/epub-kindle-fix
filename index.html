@@ -652,7 +652,13 @@ async function processEPUB() {
           const base = basename(fileRef).toLowerCase();
           const found = allPaths.find(p => basename(p).toLowerCase() === base);
           if (found) {
-            const relFound = contentDir ? found.replace(contentDir + '/', '') : found;
+            const fromSeg = contentDir ? contentDir.split('/') : [];
+            const toSeg = found.split('/');
+            let common = 0;
+            while (common < fromSeg.length && fromSeg[common] === toSeg[common]) common++;
+            const up = fromSeg.slice(common).fill('..');
+            const down = toSeg.slice(common);
+            const relFound = [...up, ...down].join('/') || '.';
             const fragment = link.includes('#') ? '#' + link.split('#')[1] : '';
             fixedIssues.push('Fixed broken link in ' + rel + ': ' + link + ' -> ' + relFound);
             return fullMatch.replace('="' + link + '"', '="' + relFound + '"');
@@ -879,6 +885,10 @@ async function processEPUB() {
 
   logMsg('Repacking EPUB...');
   setProgress(92);
+
+  // mimetype MUST be STORED (uncompressed) per EPUB spec §3.3
+  const mimeStr = await zip.file('mimetype').async('string');
+  zip.file('mimetype', mimeStr, {compress: false});
 
   // Generate the fixed EPUB
   const epubContent = await zip.generateAsync({ type: 'uint8array', mimeType: 'application/epub+zip',
