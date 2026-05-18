@@ -6,7 +6,6 @@
   ![Python](https://img.shields.io/badge/Python-3.x-3776AB.svg?style=for-the-badge&logo=python&logoColor=white)
   ![Linux](https://img.shields.io/badge/Linux-FCC624.svg?style=for-the-badge&logo=linux&logoColor=black)
   ![macOS](https://img.shields.io/badge/macOS-000000.svg?style=for-the-badge&logo=apple&logoColor=white)
-  <br>
   ![EPUB](https://img.shields.io/badge/EPUB-EB5E28.svg?style=for-the-badge&logo=epub&logoColor=white)
   ![Send to Kindle](https://img.shields.io/badge/Send%20to%20Kindle-232F3E.svg?style=for-the-badge&logo=amazon&logoColor=white)
   ![License: MIT](https://img.shields.io/badge/License-MIT-6C3BAA.svg?style=for-the-badge&logo=opensourceinitiative&logoColor=white)
