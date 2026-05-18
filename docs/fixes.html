@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fixes — epub-kindle-fix</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root {
+  --bg: #0f0d1f; --bg-nav: #16142b; --bg-card: rgba(31,28,58,0.4); --bg-card2: rgba(31,28,58,0.5);
+  --text: #eeedfe; --text-muted: #8b84b4; --text-nav: #c5bfe8;
+  --border: rgba(127,119,221,0.12); --border-hover: rgba(127,119,221,0.25);
+  --border-light: rgba(127,119,221,0.08);
+  --scrollbar: rgba(127,119,221,0.2); --scrollbar-hover: rgba(127,119,221,0.4);
+}
+[data-theme="light"] {
+  --bg: #f8f6fc; --bg-nav: #ffffff; --bg-card: rgba(255,255,255,0.8); --bg-card2: rgba(255,255,255,0.85);
+  --text: #1a1730; --text-muted: #6b6390; --text-nav: #4a4278;
+  --border: rgba(109,93,199,0.12); --border-hover: rgba(109,93,199,0.25);
+  --border-light: rgba(109,93,199,0.06);
+  --scrollbar: rgba(109,93,199,0.15); --scrollbar-hover: rgba(109,93,199,0.3);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { overflow-y:scroll; }
+body { background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; min-height:100vh; transition:background .3s,color .3s; }
+a { color:#7f77dd; text-decoration:none; transition:color .2s; }
+a:hover { color:#3cd4a0; }
+
+nav { background:var(--bg-nav); border-bottom:1px solid var(--border); padding:0 1.5rem; position:sticky; top:0; z-index:50; backdrop-filter:blur(12px); }
+.nav-inner { max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; height:56px; }
+.nav-links { display:flex; gap:1.5rem; align-items:center; }
+.nav-links a { font-size:.85rem; font-weight:500; color:var(--text-nav); letter-spacing:.02em; }
+.nav-links a:hover { color:var(--text); }
+.nav-links a.active { color:#7f77dd; }
+.nav-brand { display:flex; align-items:center; gap:.6rem; font-weight:700; font-size:1rem; color:var(--text); text-decoration:none; }
+.nav-brand .nav-icon { height:36px; width:auto; display:block; flex-shrink:0; }
+.nav-brand .brand-text { background:linear-gradient(135deg,#c5bfe8,#a78bfa,#7f77dd,#4338ca); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; font-size:1rem; letter-spacing:.03em; }
+
+.theme-toggle { background:none; border:1px solid var(--border); border-radius:8px; padding:.4rem; cursor:pointer; color:var(--text-nav); display:flex; align-items:center; justify-content:center; transition:all .2s; width:32px; height:32px; }
+.theme-toggle:hover { border-color:var(--border-hover); color:var(--text); }
+.theme-toggle .sun-icon, .theme-toggle .moon-icon { width:18px; height:18px; }
+[data-theme="dark"] .theme-toggle .sun-icon, html:not([data-theme]) .theme-toggle .sun-icon { display:block; }
+[data-theme="dark"] .theme-toggle .moon-icon, html:not([data-theme]) .theme-toggle .moon-icon { display:none; }
+[data-theme="light"] .theme-toggle .sun-icon { display:none; }
+[data-theme="light"] .theme-toggle .moon-icon { display:block; }
+
+.container { max-width:900px; margin:0 auto; padding:0 1.5rem; }
+
+.page-header { padding:4rem 0 2rem; text-align:center; }
+.page-header h1 { font-size:2.2rem; font-weight:800; letter-spacing:-.02em; margin-bottom:.5rem; }
+.page-header p { color:var(--text-muted); font-size:1.05rem; max-width:560px; margin:0 auto; line-height:1.6; }
+
+.content { padding-bottom:4rem; }
+
+.fix-group { margin-bottom:2rem; }
+.fix-group h2 { font-size:1.2rem; font-weight:700; margin-bottom:1rem; padding-bottom:.5rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.fix-group h2 .badge { font-size:.7rem; font-weight:600; padding:.2rem .6rem; border-radius:6px; background:rgba(109,93,199,.12); color:#7f77dd; letter-spacing:.04em; text-transform:uppercase; }
+
+.fix-card { padding:1.25rem 1.5rem; background:var(--bg-card); border:1px solid var(--border-light); border-radius:10px; margin-bottom:.75rem; transition:all .2s; }
+.fix-card:hover { border-color:var(--border-hover); }
+.fix-card .fix-header { display:flex; align-items:baseline; gap:.75rem; margin-bottom:.4rem; }
+.fix-card .fix-num { font-size:.7rem; font-weight:700; color:#6d5dc7; text-transform:uppercase; letter-spacing:.06em; min-width:3.5rem; }
+.fix-card .fix-name { font-size:.95rem; font-weight:600; color:var(--text); font-family:'SF Mono','Fira Code',monospace; }
+.fix-card .fix-desc { font-size:.88rem; color:var(--text-muted); line-height:1.5; }
+.fix-card .fix-tags { margin-top:.5rem; display:flex; gap:.4rem; flex-wrap:wrap; }
+.fix-card .fix-tag { font-size:.65rem; padding:.1rem .4rem; border-radius:3px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; }
+.tag-original { background:rgba(127,119,221,.12); color:#7f77dd; }
+.tag-validation { background:rgba(43,184,138,.12); color:#3cd4a0; }
+.tag-auto { background:rgba(226,75,74,.1); color:#f09595; }
+
+@media (max-width:640px) {
+  .nav-links { gap:.8rem; }
+  .nav-links a { font-size:.78rem; }
+  .nav-brand .brand-text { display:none; }
+}
+footer { border-top:1px solid var(--border); padding:2rem 0; text-align:center; color:var(--text-muted); font-size:.82rem; }
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--scrollbar); border-radius:3px; }
+::-webkit-scrollbar-thumb:hover { background:var(--scrollbar-hover); }
+</style>
+</head>
+<body>
+
+<nav>
+<div class="nav-inner">
+<a href="index.html" class="nav-brand">
+<img src="assets/epub-kindle-fix-hero.svg" alt="" class="nav-icon">
+<span class="brand-text">EPUB KINDLE FIX</span>
+</a>
+<div class="nav-links">
+<a href="index.html">Home</a>
+<a href="why-exist.html">Why</a>
+<a href="fixes.html" class="active">Fixes</a>
+<a href="credits.html">Credits</a>
+<a href="https://github.com/imanubdesigner/epub-kindle-fix" target="_blank">GitHub</a>
+<button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
+<svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+<svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+</button>
+</div>
+</div>
+</nav>
+
+<div class="container">
+<section class="page-header">
+<h1>All 16 fixes</h1>
+<p>Every fix applied to make your EPUB compatible with Send to Kindle — in order of execution.</p>
+</section>
+
+<section class="content">
+
+<div class="fix-group">
+<h2>Original fixes <span class="badge">8 fixes — ported from innocenat/kindle-epub-fix</span></h2>
+
+<div class="fix-card">
+<div class="fix-header">
+<span class="fix-num">#1</span>
+<span class="fix-name">fixBodyIdLink</span>
+</div>
+<div class="fix-desc">Replaces fragment links (e.g. <code>chapter.xhtml#bodyID</code>) that point to a <code>&lt;body id="…"&gt;</code> element with a plain file reference (<code>chapter.xhtml</code>). Amazon rejects EPUBs where NCX or TOC files link directly to a body ID hash. Replacement is scoped to <code>href</code> and <code>src</code> attributes only — no false positives in body text.</div>
+<div class="fix-tags"><span class="fix-tag tag-original">original</span><span class="fix-tag tag-auto">automatic</span></div>
+</div>
+
+<div class="fix-card">
+<div class="fix-header">
+<span class="fix-num">#2</span>
+<span class="fix-name">fixBookLanguage</span>
+</div>
+<div class="fix-desc">Checks the <code>&lt;dc:language&gt;</code> tag in the OPF metadata against Amazon KDP's list of supported language codes (ISO 639-1 and ISO 639-2). If the tag is missing or uses an unsupported code, it prompts you to provide a valid replacement — or, in the browser version, uses your selected language.</div>
+<div class="fix-tags"><span class="fix-tag tag-original">original</span><span class="fix-tag tag-auto">automatic</span></div>
+</div>
+
+<div class="fix-card">
+<div class="fix-header">
+<span class="fix-num">#3</span>
+<span class="fix-name">fixStrayIMG</span>
+</div>
+<div class="fix-desc">Removes <code>&lt;img&gt;</code> tags that have no <code>src</code> attribute. These are technically invalid and can cause Kindle to reject the EPUB during processing.</div>
+<div class="fix-tags"><span class="fix-tag tag-original">original</span><span class="fix-tag tag-auto">automatic</span></div>
+</div>
+
+<div class="fix-card">
+<div class="fix-header">
+<span class="fix-num">#4</span>
+<span class="fix-name">fixEncoding</span>
+</div>
+<div class="fix-desc">Prepends an XML encoding declaration (<code>&lt;?xml version="1.0" encoding="utf-8"?&gt;</code>) to every HTML/XHTML file that is missing one. Also strips the UTF-8 BOM (<code>\xEF\xBB\xBF</code>) if present, which would otherwise make the declaration appear after the BOM and break XML parsing.</div>
+<div class="fix-tags"><span class="fix-tag tag-original">original</span><span class="fix-tag tag-auto">automatic</span></div>
+</div>
+
+<div class="fix-card">
+<div class="fix-header">
+<span class="fix-num">#5</span>
+<span class="fix-name">fixCoverMeta</span>
+</div>
+<div class="fix-desc">Ensures a <code>&lt;meta name="cover" content="…"/&gt;</code> element exists in the OPF metadata, pointing to the cover image manifest item. Without this, Kindle does not display the cover thumbnail in your library grid.</div>
+<div class="fix-tags"><span class="fix-tag tag-original">original</span><span class="fix-tag tag-auto">automatic</span></div>
+</div>
+
+<div class="fix-card">
+<div class="fix-header">
+<span class="fix-num">#6</span>
+<span class="fix-name">fixManifestTypes</span>
+</div>
+<div class="fix-desc">Corrects wrong <code>media-type</code> declarations in the OPF manifest for image files. For example, a <code>.jpg</code> file declared as <code>image/png</code> will be silently ignored by Kindle. The correct MIME type is inferred from the file extension.</div>
+<div class="fix-tags"><span class="fix-tag tag-original">original</span><span class="fix-tag tag-auto">automatic</span></div>
+</div>
+
+<div class="fix-card">
+<div class="fix-header">
+<span class="fix-num">#7</span>
+<span class="fix-name">fixSpineLinear</span>
+</div>
+<div class="fix-desc">Sets <code>linear="yes"</code> on spine items that have <code>linear="no"</code> but appear to be real chapters (i.e. not cover, TOC, or NCX files). Some converters incorrectly mark all non-cover items as non-linear, causing Kindle to skip them during reading.</div>
+<div class="fix-tags"><span class="fix-tag tag-original">original</span><span class="fix-tag tag-auto">automatic</span></div>
+</div>
+
+<div class="fix-card">
+<div class="fix-header">
+<span class="fix-num">#8</span>
+<span class="fix-name">fixBrokenFontFace</span>
+</div>
+<div class="fix-desc">Removes <code>@font-face</code> CSS rules that reference font files not actually included in the EPUB archive. These broken declarations generate warnings during conversion and can interfere with Kindle's rendering pipeline.</div>
+<div class="fix-tags"><span class="fix-tag tag-original">original</span><span class="fix-tag tag-auto">automatic</span></div>
+</div>
+</div>
+
+<div class="fix-group">
+<h2>Validation fixes <span class="badge">8 fixes — EpubCheck-style validations</span></h2>
+
+<div class="fix-card">
+<div class="fix-header">
+<span class="fix-num">#9</span>
+<span class="fix-name">fixManifestFiles</span>
+</div>
+<div class="fix-desc">Verifies that all files referenced in the OPF manifest actually exist inside the EPUB archive. Manifest entries pointing to missing files are automatically removed, preventing reading system failures.</div>
+<div class="fix-tags"><span class="fix-tag tag-validation">validation</span><span class="fix-tag tag-auto">automatic</span></div>
+</div>
+
+<div class="fix-card">
+<div class="fix-header">
+<span class="fix-num">#10</span>
+<span class="fix-name">fixBrokenLinks</span>
+</div>
+<div class="fix-desc">Scans all XHTML, OPF, and NCX files for <code>href</code> and <code>src</code> attributes. Broken internal links are automatically fixed by case-insensitive file matching or removed if the file cannot be found. External URLs, anchors (<code>#id</code>), and data URIs are correctly skipped.</div>
+<div class="fix-tags"><span class="fix-tag tag-validation">validation</span><span class="fix-tag tag-auto">automatic</span></div>
+</div>
+
+<div class="fix-card">
+<div class="fix-header">
+<span class="fix-num">#11</span>
+<span class="fix-name">fixInvalidXmlIds</span>
+</div>
+<div class="fix-desc">Fixes invalid XML <code>id</code> attributes that contain colons or start with digits (e.g. UUIDs like <code>5fa24b14-a9b0-4b94-bd4b-c3513accae2d</code>). These violate XML naming rules and cause parsing errors. Invalid IDs are automatically fixed by replacing colons with underscores and prepending <code>id_</code> if needed. All references to renamed IDs are also updated.</div>
+<div class="fix-tags"><span class="fix-tag tag-validation">validation</span><span class="fix-tag tag-auto">automatic</span></div>
+</div>
+
+<div class="fix-card">
+<div class="fix-header">
+<span class="fix-num">#12</span>
+<span class="fix-name">validateXML</span>
+</div>
+<div class="fix-desc">Checks that all XHTML, OPF, and NCX files are well-formed XML using the browser's built-in <code>DOMParser</code>. Malformed XML is reported as a warning (manual fix required).</div>
+<div class="fix-tags"><span class="fix-tag tag-validation">validation</span><span class="fix-tag tag-auto">read-only</span></div>
+</div>
+
+<div class="fix-card">
+<div class="fix-header">
+<span class="fix-num">#13</span>
+<span class="fix-name">fixDuplicateIds</span>
+</div>
+<div class="fix-desc">Finds duplicate <code>id</code> attributes within each XHTML file. The first occurrence stays unchanged; subsequent duplicates are automatically renamed with unique <code>_dup2</code>, <code>_dup3</code>, etc. suffixes. Per-file processing is correct for EPUB, where each XHTML file is an independent XML document.</div>
+<div class="fix-tags"><span class="fix-tag tag-validation">validation</span><span class="fix-tag tag-auto">automatic</span></div>
+</div>
+
+<div class="fix-card">
+<div class="fix-header">
+<span class="fix-num">#14</span>
+<span class="fix-name">fixNamespaces</span>
+</div>
+<div class="fix-desc">Adds missing required XML namespaces: <code>http://www.idpf.org/2007/opf</code> and <code>http://purl.org/dc/elements/1.1/</code> for OPF files; <code>http://www.w3.org/1999/xhtml</code> for XHTML files. Missing namespaces are automatically added to prevent parsing errors in strict reading systems like Kindle.</div>
+<div class="fix-tags"><span class="fix-tag tag-validation">validation</span><span class="fix-tag tag-auto">automatic</span></div>
+</div>
+
+<div class="fix-card">
+<div class="fix-header">
+<span class="fix-num">#15</span>
+<span class="fix-name">fixValueAttributes</span>
+</div>
+<div class="fix-desc">Removes the <code>value</code> attribute from HTML elements where it is not valid in XHTML 1.1 (EPUB 2.0.1). The <code>value</code> attribute is only permitted on <code>&lt;input&gt;</code>, <code>&lt;option&gt;</code>, <code>&lt;param&gt;</code>, and <code>&lt;button&gt;</code>. On <code>&lt;li&gt;</code> and other elements it triggers EpubCheck error RSC-005.</div>
+<div class="fix-tags"><span class="fix-tag tag-validation">validation</span><span class="fix-tag tag-auto">automatic</span></div>
+</div>
+
+<div class="fix-card">
+<div class="fix-header">
+<span class="fix-num">#16</span>
+<span class="fix-name">fixBrokenFragments</span>
+</div>
+<div class="fix-desc">Strips fragment identifiers (<code>#id</code>) from links that reference non-existent IDs in the target file. Resolves EpubCheck error RSC-012.</div>
+<div class="fix-tags"><span class="fix-tag tag-validation">validation</span><span class="fix-tag tag-auto">automatic</span></div>
+</div>
+</div>
+
+</section>
+</div>
+
+<footer>
+<div class="container">
+Created with ❤️ and ☕ for readers everywhere 📚<br>
+<a href="https://github.com/imanubdesigner/epub-kindle-fix">epub-kindle-fix</a> &mdash; port of <a href="https://github.com/innocenat/kindle-epub-fix">innocenat/kindle-epub-fix</a> &mdash; MIT License
+</div>
+</footer>
+
+<script>
+(function(){const s=localStorage.getItem('epub-kind-fix-theme');if(s==='light')document.documentElement.setAttribute('data-theme','light');else document.documentElement.setAttribute('data-theme','dark');document.getElementById('themeToggle').addEventListener('click',()=>{const h=document.documentElement,n=h.getAttribute('data-theme')==='dark'?'light':'dark';h.setAttribute('data-theme',n);localStorage.setItem('epub-kind-fix-theme',n);});})();
+</script>
+</body>
+</html>
