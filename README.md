@@ -1,19 +1,7 @@
 <div align="center">
-  <img src="assets/epub-kindle-fix-hero.svg" alt="epub-kindle-fix logo" width="400"/>
+  <img src="assets/epub-kindle-fix-hero.svg" alt="epub-kindle-fix logo" width="250"/>
   <br>
-  <svg width="400" height="40" viewBox="0 0 400 40">
-    <defs>
-      <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#c5bfe8"/>
-        <stop offset="33%" stop-color="#a78bfa"/>
-        <stop offset="66%" stop-color="#7f77dd"/>
-        <stop offset="100%" stop-color="#4338ca"/>
-      </linearGradient>
-    </defs>
-    <text x="200" y="30" font-family="sans-serif" font-size="24"
-          font-weight="bold" fill="url(#g)" text-anchor="middle"
-          letter-spacing="3">EPUB KINDLE FIX</text>
-  </svg>
+  <img src="assets/epub-kindle-fix-text.svg" alt="EPUB KINDLE FIX" width="400" height="40"/>
 </div>
 
 <div align="center">
