@@ -1,6 +1,6 @@
 <div align="center">
   <img src="assets/epub-kindle-fix-hero.svg" alt="epub-kindle-fix logo" width="250"/>
-  <br>
+  <br><br>
   
   ![Bash](https://img.shields.io/badge/Bash-4EAA25.svg?style=for-the-badge&logo=gnubash&logoColor=white)
   ![Python](https://img.shields.io/badge/Python-3.x-3776AB.svg?style=for-the-badge&logo=python&logoColor=white)
