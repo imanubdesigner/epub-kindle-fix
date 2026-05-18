@@ -1,16 +1,14 @@
 <div align="center">
   <img src="assets/epub-kindle-fix-hero.svg" alt="epub-kindle-fix logo" width="250"/>
-  <br>
-  <img src="assets/epub-kindle-fix-text.svg" alt="EPUB KINDLE FIX" width="400" height="40" style="margin-top: 8px;"/>
   <br><br>
-  <img src="https://img.shields.io/badge/Bash-4EAA25.svg?style=for-the-badge&logo=gnubash&logoColor=white" alt="Bash"/>
-  <img src="https://img.shields.io/badge/Python-3.x-3776AB.svg?style=for-the-badge&logo=python&logoColor=white" alt="Python"/>
-  <img src="https://img.shields.io/badge/Linux-FCC624.svg?style=for-the-badge&logo=linux&logoColor=black" alt="Linux"/>
-  <img src="https://img.shields.io/badge/macOS-000000.svg?style=for-the-badge&logo=apple&logoColor=white" alt="macOS"/>
+  ![Bash](https://img.shields.io/badge/Bash-4EAA25.svg?style=for-the-badge&logo=gnubash&logoColor=white)
+  ![Python](https://img.shields.io/badge/Python-3.x-3776AB.svg?style=for-the-badge&logo=python&logoColor=white)
+  ![Linux](https://img.shields.io/badge/Linux-FCC624.svg?style=for-the-badge&logo=linux&logoColor=black)
+  ![macOS](https://img.shields.io/badge/macOS-000000.svg?style=for-the-badge&logo=apple&logoColor=white)
   <br>
-  <img src="https://img.shields.io/badge/EPUB-EB5E28.svg?style=for-the-badge&logo=epub&logoColor=white" alt="EPUB"/>
-  <img src="https://img.shields.io/badge/Send%20to%20Kindle-232F3E.svg?style=for-the-badge&logo=amazon&logoColor=white" alt="Send to Kindle"/>
-  <img src="https://img.shields.io/badge/License-MIT-6C3BAA.svg?style=for-the-badge&logo=opensourceinitiative&logoColor=white" alt="License: MIT"/>
+  ![EPUB](https://img.shields.io/badge/EPUB-EB5E28.svg?style=for-the-badge&logo=epub&logoColor=white)
+  ![Send to Kindle](https://img.shields.io/badge/Send%20to%20Kindle-232F3E.svg?style=for-the-badge&logo=amazon&logoColor=white)
+  ![License: MIT](https://img.shields.io/badge/License-MIT-6C3BAA.svg?style=for-the-badge&logo=opensourceinitiative&logoColor=white)
 </div>
 
 
