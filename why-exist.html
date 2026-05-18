@@ -65,6 +65,11 @@ nav { background:var(--bg-nav); border-bottom:1px solid var(--border); padding:0
 .tag-amazon { background:rgba(43,184,138,.15); color:#3cd4a0; }
 .tag-epub { background:rgba(226,75,74,.15); color:#f09595; }
 
+@media (max-width:640px) {
+  .nav-links { gap:.8rem; }
+  .nav-links a { font-size:.78rem; }
+  .nav-brand .brand-text { display:none; }
+}
 footer { border-top:1px solid var(--border); padding:2rem 0; text-align:center; color:var(--text-muted); font-size:.82rem; }
 ::-webkit-scrollbar { width:6px; }
 ::-webkit-scrollbar-track { background:transparent; }
