@@ -1,7 +1,7 @@
 <div align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/epub-kindle-fix-logo-dark.svg"/>
-    <img src="assets/epub-kindle-fix-logo.svg" alt="epub-kindle-fix logo" width="520"/>
+    <img src="assets/epub-kindle-fix-hero.svg" alt="epub-kindle-fix logo" width="520"/>
   </picture>
 </div>
 
