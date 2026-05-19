@@ -10,4 +10,4 @@ For the CLI version (Bash + Python), see the [main repository](https://github.co
 
 ---
 
-Built with ❤️ for readers everywhere.
+Built with ❤️ and ☕️ for readers everywhere 📚️.
