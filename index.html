@@ -103,8 +103,9 @@ html:not([data-theme]) .theme-toggle .moon-icon { display: none; }
 
 .btn { padding: 0.7rem 2rem; border-radius: 10px; font-weight: 700; font-size: 0.9rem; border: none; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem; }
 .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.btn-primary { background: linear-gradient(135deg, #6d5dc7, #5a4db3); color: #fff; }
-.btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(109,93,199,0.35); }
+.btn-primary { border: 2px solid #fff; color: #fff; background: linear-gradient(90deg, #6d5dc7, #5a4db3) no-repeat; background-size: 0% 100%; transition: background-size 0.5s ease, color 0.3s ease; }
+[data-theme="light"] .btn-primary { border-color: #5a4db3; color: #5a4db3; }
+.btn-primary:hover:not(:disabled) { background-size: 100% 100%; color: #fff; }
 .btn-success { background: linear-gradient(135deg, #2bb88a, #229e75); color: #fff; }
 .btn-success:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(43,184,138,0.35); }
 .btn-outline { background: transparent; border: 1px solid var(--border-strong); color: var(--text-nav); }
@@ -261,7 +262,7 @@ For full epubcheck validation, use the <a href="https://github.com/imanubdesigne
 <div>
 <h3>Want more control?</h3>
 <p>Batch process multiple EPUBs, run full epubcheck validation, integrate into your pipeline — all from the terminal.</p>
-<a href="https://github.com/imanubdesigner/epub-kindle-fix/releases" class="btn btn-primary" target="_blank">⬇ Download CLI</a>
+<a href="https://github.com/imanubdesigner/epub-kindle-fix/releases" class="btn btn-primary" target="_blank"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download CLI</a>
 </div>
 </div>
 </section>
